@@ -33,8 +33,7 @@ export async function exportLineupVideo(
   canvas.height = CANVAS_H;
   const ctx = canvas.getContext("2d")!;
   const fps = 30;
-  // @ts-expect-error captureStream is supported in modern browsers
-  const stream: MediaStream = canvas.captureStream(fps);
+  const stream: MediaStream = (canvas as HTMLCanvasElement & { captureStream: (fps: number) => MediaStream }).captureStream(fps);
 
   const { mime, ext } = pickMime(format);
   const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6_000_000 });
