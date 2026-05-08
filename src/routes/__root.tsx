@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Lineup Studio" },
+      { name: "description", content: "Lineup Motion Studio creates animated sports line-up videos for livestreams." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Lineup Studio" },
+      { property: "og:description", content: "Lineup Motion Studio creates animated sports line-up videos for livestreams." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Lineup Studio" },
+      { name: "twitter:description", content: "Lineup Motion Studio creates animated sports line-up videos for livestreams." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed851dc0-b600-46d4-9ee4-881550048b5a/id-preview-ad1ead72--e94ac6a1-215e-41c6-8ff0-bfa71d580350.lovable.app-1778199206934.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed851dc0-b600-46d4-9ee4-881550048b5a/id-preview-ad1ead72--e94ac6a1-215e-41c6-8ff0-bfa71d580350.lovable.app-1778199206934.png" },
     ],
     links: [
       {
