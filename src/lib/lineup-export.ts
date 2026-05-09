@@ -1,4 +1,4 @@
-import { CANVAS_H, CANVAS_W, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
+import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, CANVAS_H, CANVAS_W, VS_BADGE_IMAGE, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
 import type { Match } from "./lineup-types";
 
 export type ExportFormat = "mp4" | "webm";
@@ -28,7 +28,7 @@ export async function exportLineupVideo(
   format: ExportFormat,
   onProgress?: (p: number) => void
 ): Promise<{ blob: Blob; ext: string }> {
-  await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url]);
+  await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url, BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE]);
   const canvas = document.createElement("canvas");
   canvas.width = CANVAS_W;
   canvas.height = CANVAS_H;
@@ -37,7 +37,7 @@ export async function exportLineupVideo(
   const stream: MediaStream = (canvas as HTMLCanvasElement & { captureStream: (fps: number) => MediaStream }).captureStream(fps);
 
   const { mime, ext } = pickMime(format);
-  const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6_000_000 });
+  const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12_000_000 });
   const chunks: Blob[] = [];
   recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
 

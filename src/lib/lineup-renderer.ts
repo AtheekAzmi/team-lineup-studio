@@ -1,13 +1,22 @@
 import type { AnimationStyle, Match } from "./lineup-types";
 
-export const CANVAS_W = 1280;
-export const CANVAS_H = 720;
-export const ROW_DURATION = 0.35;
-export const HOLD_DURATION = 2.5;
+export const CANVAS_W = 1536;
+export const CANVAS_H = 896;
+export const ROW_DURATION = 0.45;
+export const HOLD_DURATION = 9;
+export const MIN_DURATION = 15;
+export const MAX_DURATION = 20;
+
+// Brand assets shown on every lineup
+export const BRAND_LEFT_LOGO = "/branding/sports-festival-logo.png";
+export const BRAND_RIGHT_LOGO = "/branding/oba-logo.png";
+export const VS_BADGE_IMAGE = "/branding/vs.png";
 
 export const totalDuration = (m: Match) => {
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
-  return (rows * ROW_DURATION + HOLD_DURATION) / Math.max(0.25, m.animation_speed);
+  const base = rows * ROW_DURATION + HOLD_DURATION;
+  const clamped = Math.min(MAX_DURATION, Math.max(MIN_DURATION, base));
+  return clamped / Math.max(0.25, m.animation_speed);
 };
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
@@ -93,31 +102,66 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.translate(0, (1 - headerProg) * -20);
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
-  ctx.font = "700 36px system-ui, sans-serif";
-  ctx.fillText(m.title, CANVAS_W / 2, 60);
-  ctx.font = "600 22px system-ui, sans-serif";
+  ctx.font = "700 44px system-ui, sans-serif";
+  ctx.fillText(m.title, CANVAS_W / 2, 78);
+  ctx.font = "600 26px system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 95);
+  ctx.fillText(m.subtitle, CANVAS_W / 2, 116);
+  ctx.restore();
+
+  // Brand logos flanking title (left = sports festival, right = OBA)
+  const brandProg = easeOut(clamp01(t / 0.7));
+  drawBrandLogo(ctx, BRAND_LEFT_LOGO, 110, 90, 150, brandProg);
+  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, CANVAS_W - 110, 90, 150, brandProg);
+}
+
+function drawBrandLogo(
+  ctx: CanvasRenderingContext2D,
+  url: string,
+  cx: number,
+  cy: number,
+  maxSize: number,
+  prog: number,
+) {
+  const img = getCachedImage(url);
+  if (!img) return;
+  const ratio = img.width / img.height || 1;
+  const w = ratio >= 1 ? maxSize : maxSize * ratio;
+  const h = ratio >= 1 ? maxSize / ratio : maxSize;
+  ctx.save();
+  ctx.globalAlpha = prog;
+  ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
   ctx.restore();
 }
 
 function drawVS(ctx: CanvasRenderingContext2D, t: number) {
   const p = easeOut(clamp01((t - 0.4) / 0.6));
+  if (p <= 0) return;
+  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 30;
+  const scale = 0.7 + 0.3 * p;
+  const img = getCachedImage(VS_BADGE_IMAGE);
   ctx.save();
   ctx.globalAlpha = p;
-  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 20;
-  const scale = 0.7 + 0.3 * p;
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
-  ctx.fillStyle = "#fde047";
-  ctx.beginPath();
-  ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
-  ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.font = "900 80px system-ui, sans-serif";
-  ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText("VS", 0, 0);
+  if (img) {
+    const target = 280;
+    const ratio = img.width / img.height || 1;
+    const w = ratio >= 1 ? target : target * ratio;
+    const h = ratio >= 1 ? target / ratio : target;
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  } else {
+    // Fallback vector VS while image loads
+    ctx.fillStyle = "#fde047";
+    ctx.beginPath();
+    ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
+    ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.font = "900 80px system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("VS", 0, 0);
+  }
   ctx.restore();
 }
 
@@ -284,25 +328,25 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawBackground(ctx, m);
   drawHeader(ctx, m, t);
 
-  const colW = 380;
-  const colAX = 120;
-  const colBX = CANVAS_W - 120 - colW;
-  const headerY = 130;
+  const colW = 480;
+  const colAX = 150;
+  const colBX = CANVAS_W - 150 - colW;
+  const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
   drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, teamProg);
   drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, teamProg);
 
-  // Logos near each team header (centered above the header by default)
+  // Team logos centered above each team header (user-supplied per match)
   const logoProg = easeOut(clamp01((t - 0.1) / 0.6));
-  drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 60, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
-  drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 60, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
+  drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 70, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
+  drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 70, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
   drawVS(ctx, t);
 
-  const rowH = 30;
-  const rowGap = 4;
-  const rowsStartY = headerY + 70;
+  const rowH = 38;
+  const rowGap = 6;
+  const rowsStartY = headerY + 80;
 
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
   const stagger = ROW_DURATION;
