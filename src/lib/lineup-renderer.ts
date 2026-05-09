@@ -328,25 +328,25 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawBackground(ctx, m);
   drawHeader(ctx, m, t);
 
-  const colW = 380;
-  const colAX = 120;
-  const colBX = CANVAS_W - 120 - colW;
-  const headerY = 130;
+  const colW = 480;
+  const colAX = 150;
+  const colBX = CANVAS_W - 150 - colW;
+  const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
   drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, teamProg);
   drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, teamProg);
 
-  // Logos near each team header (centered above the header by default)
+  // Team logos centered above each team header (user-supplied per match)
   const logoProg = easeOut(clamp01((t - 0.1) / 0.6));
-  drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 60, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
-  drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 60, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
+  drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 70, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
+  drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 70, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
   drawVS(ctx, t);
 
-  const rowH = 30;
-  const rowGap = 4;
-  const rowsStartY = headerY + 70;
+  const rowH = 38;
+  const rowGap = 6;
+  const rowsStartY = headerY + 80;
 
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
   const stagger = ROW_DURATION;
