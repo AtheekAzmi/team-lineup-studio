@@ -102,31 +102,66 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.translate(0, (1 - headerProg) * -20);
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
-  ctx.font = "700 36px system-ui, sans-serif";
-  ctx.fillText(m.title, CANVAS_W / 2, 60);
-  ctx.font = "600 22px system-ui, sans-serif";
+  ctx.font = "700 44px system-ui, sans-serif";
+  ctx.fillText(m.title, CANVAS_W / 2, 78);
+  ctx.font = "600 26px system-ui, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 95);
+  ctx.fillText(m.subtitle, CANVAS_W / 2, 116);
+  ctx.restore();
+
+  // Brand logos flanking title (left = sports festival, right = OBA)
+  const brandProg = easeOut(clamp01(t / 0.7));
+  drawBrandLogo(ctx, BRAND_LEFT_LOGO, 110, 90, 150, brandProg);
+  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, CANVAS_W - 110, 90, 150, brandProg);
+}
+
+function drawBrandLogo(
+  ctx: CanvasRenderingContext2D,
+  url: string,
+  cx: number,
+  cy: number,
+  maxSize: number,
+  prog: number,
+) {
+  const img = getCachedImage(url);
+  if (!img) return;
+  const ratio = img.width / img.height || 1;
+  const w = ratio >= 1 ? maxSize : maxSize * ratio;
+  const h = ratio >= 1 ? maxSize / ratio : maxSize;
+  ctx.save();
+  ctx.globalAlpha = prog;
+  ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
   ctx.restore();
 }
 
 function drawVS(ctx: CanvasRenderingContext2D, t: number) {
   const p = easeOut(clamp01((t - 0.4) / 0.6));
+  if (p <= 0) return;
+  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 30;
+  const scale = 0.7 + 0.3 * p;
+  const img = getCachedImage(VS_BADGE_IMAGE);
   ctx.save();
   ctx.globalAlpha = p;
-  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 20;
-  const scale = 0.7 + 0.3 * p;
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
-  ctx.fillStyle = "#fde047";
-  ctx.beginPath();
-  ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
-  ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
-  ctx.closePath(); ctx.fill();
-  ctx.fillStyle = "#fff";
-  ctx.font = "900 80px system-ui, sans-serif";
-  ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText("VS", 0, 0);
+  if (img) {
+    const target = 280;
+    const ratio = img.width / img.height || 1;
+    const w = ratio >= 1 ? target : target * ratio;
+    const h = ratio >= 1 ? target / ratio : target;
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  } else {
+    // Fallback vector VS while image loads
+    ctx.fillStyle = "#fde047";
+    ctx.beginPath();
+    ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
+    ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.font = "900 80px system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("VS", 0, 0);
+  }
   ctx.restore();
 }
 
