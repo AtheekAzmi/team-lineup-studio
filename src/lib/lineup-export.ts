@@ -1,4 +1,4 @@
-import { CANVAS_H, CANVAS_W, renderFrame, totalDuration } from "./lineup-renderer";
+import { CANVAS_H, CANVAS_W, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
 import type { Match } from "./lineup-types";
 
 export type ExportFormat = "mp4" | "webm";
@@ -28,6 +28,7 @@ export async function exportLineupVideo(
   format: ExportFormat,
   onProgress?: (p: number) => void
 ): Promise<{ blob: Blob; ext: string }> {
+  await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url]);
   const canvas = document.createElement("canvas");
   canvas.width = CANVAS_W;
   canvas.height = CANVAS_H;

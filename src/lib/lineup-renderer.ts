@@ -2,8 +2,8 @@ import type { AnimationStyle, Match } from "./lineup-types";
 
 export const CANVAS_W = 1280;
 export const CANVAS_H = 720;
-export const ROW_DURATION = 0.35; // seconds per row reveal
-export const HOLD_DURATION = 2.5; // seconds after last row
+export const ROW_DURATION = 0.35;
+export const HOLD_DURATION = 2.5;
 
 export const totalDuration = (m: Match) => {
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
@@ -13,6 +13,42 @@ export const totalDuration = (m: Match) => {
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
+// ---- Image cache (cross-origin so canvas stays untainted for export) ----
+const imageCache = new Map<string, HTMLImageElement>();
+
+export function getCachedImage(url: string): HTMLImageElement | null {
+  if (!url) return null;
+  const cached = imageCache.get(url);
+  if (cached) return cached.complete && cached.naturalWidth > 0 ? cached : null;
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = url;
+  imageCache.set(url, img);
+  return null;
+}
+
+export function preloadImages(urls: (string | null | undefined)[]): Promise<void> {
+  const tasks = urls
+    .filter((u): u is string => !!u)
+    .map(
+      (u) =>
+        new Promise<void>((resolve) => {
+          const existing = imageCache.get(u);
+          if (existing && existing.complete && existing.naturalWidth > 0) return resolve();
+          const img = existing ?? new Image();
+          if (!existing) {
+            img.crossOrigin = "anonymous";
+            imageCache.set(u, img);
+          }
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          if (!existing) img.src = u;
+          if (img.complete) resolve();
+        }),
+    );
+  return Promise.all(tasks).then(() => undefined);
+}
+
 function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
   const grad = ctx.createLinearGradient(0, 0, CANVAS_W, CANVAS_H);
   grad.addColorStop(0, m.bg_from);
@@ -20,8 +56,30 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
-  // subtle vignette
-  const v = ctx.createRadialGradient(CANVAS_W/2, CANVAS_H/2, 200, CANVAS_W/2, CANVAS_H/2, 800);
+  if (m.bg_image_url) {
+    const img = getCachedImage(m.bg_image_url);
+    if (img) {
+      // cover-fit
+      const ir = img.width / img.height;
+      const cr = CANVAS_W / CANVAS_H;
+      let dw = CANVAS_W, dh = CANVAS_H, dx = 0, dy = 0;
+      if (ir > cr) {
+        dh = CANVAS_H;
+        dw = dh * ir;
+        dx = (CANVAS_W - dw) / 2;
+      } else {
+        dw = CANVAS_W;
+        dh = dw / ir;
+        dy = (CANVAS_H - dh) / 2;
+      }
+      ctx.save();
+      ctx.globalAlpha = clamp01(m.bg_image_opacity);
+      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.restore();
+    }
+  }
+
+  const v = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, 200, CANVAS_W / 2, CANVAS_H / 2, 800);
   v.addColorStop(0, "rgba(0,0,0,0)");
   v.addColorStop(1, "rgba(0,0,0,0.45)");
   ctx.fillStyle = v;
@@ -51,7 +109,6 @@ function drawVS(ctx: CanvasRenderingContext2D, t: number) {
   const scale = 0.7 + 0.3 * p;
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
-  // bolt
   ctx.fillStyle = "#fde047";
   ctx.beginPath();
   ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
@@ -64,11 +121,34 @@ function drawVS(ctx: CanvasRenderingContext2D, t: number) {
   ctx.restore();
 }
 
+function drawLogo(
+  ctx: CanvasRenderingContext2D,
+  url: string | null,
+  anchorX: number,
+  anchorY: number,
+  scale: number,
+  offsetX: number,
+  offsetY: number,
+  prog: number,
+) {
+  if (!url) return;
+  const img = getCachedImage(url);
+  if (!img) return;
+  const baseSize = 140;
+  const ratio = img.width / img.height || 1;
+  const w = baseSize * scale * (ratio >= 1 ? 1 : ratio);
+  const h = baseSize * scale * (ratio >= 1 ? 1 / ratio : 1);
+  ctx.save();
+  ctx.globalAlpha = prog;
+  ctx.translate(anchorX + offsetX, anchorY + offsetY);
+  ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  ctx.restore();
+}
+
 function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, name: string, color: string, prog: number) {
   ctx.save();
   ctx.globalAlpha = prog;
   ctx.translate(0, (1 - prog) * 20);
-  // gold/team gradient pill
   const g = ctx.createLinearGradient(x, y, x + w, y);
   g.addColorStop(0, shade(color, -0.2));
   g.addColorStop(0.5, color);
@@ -84,9 +164,9 @@ function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: 
 
 function shade(hex: string, amt: number): string {
   const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0,2), 16);
-  const g = parseInt(c.substring(2,4), 16);
-  const b = parseInt(c.substring(4,6), 16);
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
   const f = (v: number) => Math.max(0, Math.min(255, Math.round(v + v * amt)));
   return `rgb(${f(r)}, ${f(g)}, ${f(b)})`;
 }
@@ -113,7 +193,6 @@ function drawRow(
 
   ctx.save();
 
-  // Per-style transform/effects
   switch (style) {
     case "rise":
       ctx.globalAlpha = e;
@@ -178,12 +257,10 @@ function drawRow(
     }
   }
 
-  // pill
   roundRect(ctx, x, y, w, h, 6);
   ctx.fillStyle = color;
   ctx.fill();
 
-  // index square
   roundRect(ctx, x, y, h, h, 6);
   ctx.fillStyle = shade(color, -0.35);
   ctx.fill();
@@ -212,8 +289,14 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   const colBX = CANVAS_W - 120 - colW;
   const headerY = 130;
 
-  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, easeOut(clamp01((t - 0.2) / 0.5)));
-  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, easeOut(clamp01((t - 0.2) / 0.5)));
+  const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
+  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, teamProg);
+  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, teamProg);
+
+  // Logos near each team header (centered above the header by default)
+  const logoProg = easeOut(clamp01((t - 0.1) / 0.6));
+  drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 60, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
+  drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 60, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
   drawVS(ctx, t);
 

@@ -29,6 +29,16 @@ export interface Match {
   team_b_color: string;
   bg_from: string;
   bg_to: string;
+  bg_image_url: string | null;
+  bg_image_opacity: number;
+  team_a_logo_url: string | null;
+  team_a_logo_scale: number;
+  team_a_logo_x: number;
+  team_a_logo_y: number;
+  team_b_logo_url: string | null;
+  team_b_logo_scale: number;
+  team_b_logo_x: number;
+  team_b_logo_y: number;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
@@ -44,6 +54,16 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   team_b_color: "#facc15",
   bg_from: "#1e1b4b",
   bg_to: "#7f1d1d",
+  bg_image_url: null,
+  bg_image_opacity: 0.6,
+  team_a_logo_url: null,
+  team_a_logo_scale: 1,
+  team_a_logo_x: 0,
+  team_a_logo_y: 0,
+  team_b_logo_url: null,
+  team_b_logo_scale: 1,
+  team_b_logo_x: 0,
+  team_b_logo_y: 0,
   animation_style: "rise",
   animation_speed: 1,
 });

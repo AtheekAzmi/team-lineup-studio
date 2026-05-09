@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeft, Download, Loader2, Plus, Save, Trash2, Play } from "lucide-react";
+import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
 import { ANIMATION_STYLES, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
 import { downloadBlob, exportLineupVideo } from "@/lib/lineup-export";
@@ -26,6 +26,28 @@ function Editor() {
   const [playKey, setPlayKey] = useState(0);
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState<null | { progress: number; format: string }>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
+
+  const uploadAsset = async (
+    file: File,
+    field: "bg_image_url" | "team_a_logo_url" | "team_b_logo_url",
+  ) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) { toast.error("Not signed in"); return; }
+    setUploading(field);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${uid}/${field}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("lineup-assets").upload(path, file, {
+      cacheControl: "3600", upsert: true, contentType: file.type,
+    });
+    if (upErr) { setUploading(null); toast.error(upErr.message); return; }
+    const { data: pub } = supabase.storage.from("lineup-assets").getPublicUrl(path);
+    update({ [field]: pub.publicUrl } as Partial<Match>);
+    setUploading(null);
+    setPlayKey(k => k + 1);
+    toast.success("Uploaded");
+  };
 
   useEffect(() => {
     supabase.from("matches").select("*").eq("id", matchId).single().then(({ data, error }) => {
@@ -49,6 +71,11 @@ function Editor() {
       team_a_name: match.team_a_name, team_a_players: match.team_a_players, team_a_color: match.team_a_color,
       team_b_name: match.team_b_name, team_b_players: match.team_b_players, team_b_color: match.team_b_color,
       bg_from: match.bg_from, bg_to: match.bg_to,
+      bg_image_url: match.bg_image_url, bg_image_opacity: match.bg_image_opacity,
+      team_a_logo_url: match.team_a_logo_url, team_a_logo_scale: match.team_a_logo_scale,
+      team_a_logo_x: match.team_a_logo_x, team_a_logo_y: match.team_a_logo_y,
+      team_b_logo_url: match.team_b_logo_url, team_b_logo_scale: match.team_b_logo_scale,
+      team_b_logo_x: match.team_b_logo_x, team_b_logo_y: match.team_b_logo_y,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
@@ -213,6 +240,85 @@ function Editor() {
                   ))}
                 </div>
               </div>
+
+              {/* Background image */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" />Background image</Label>
+                {match.bg_image_url ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <img src={match.bg_image_url} alt="bg" className="w-full h-24 object-cover rounded border border-border" />
+                      <Button size="icon" variant="destructive" className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => { update({ bg_image_url: null }); setPlayKey(k => k + 1); }}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Opacity: {Math.round(match.bg_image_opacity * 100)}%</Label>
+                      <Slider value={[match.bg_image_opacity]} min={0} max={1} step={0.05}
+                        onValueChange={([v]) => update({ bg_image_opacity: v })} />
+                    </div>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 h-20 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                    {uploading === "bg_image_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload background</span></>}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, "bg_image_url"); }} />
+                  </label>
+                )}
+              </div>
+
+              {/* Logos */}
+              {(["a", "b"] as const).map((side) => {
+                const field = side === "a" ? "team_a_logo_url" : "team_b_logo_url";
+                const scaleField = side === "a" ? "team_a_logo_scale" : "team_b_logo_scale";
+                const xField = side === "a" ? "team_a_logo_x" : "team_b_logo_x";
+                const yField = side === "a" ? "team_a_logo_y" : "team_b_logo_y";
+                const url = match[field];
+                const scale = match[scaleField];
+                const x = match[xField];
+                const y = match[yField];
+                const teamLabel = side === "a" ? match.team_a_name : match.team_b_name;
+                return (
+                  <div key={side} className="space-y-2 pt-4 border-t border-border">
+                    <Label className="text-sm font-medium">{teamLabel} logo</Label>
+                    {url ? (
+                      <div className="space-y-3">
+                        <div className="relative w-fit">
+                          <img src={url} alt="logo" className="h-20 w-20 object-contain rounded border border-border bg-muted/30 p-1" />
+                          <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => update({ [field]: null } as Partial<Match>)}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Size: {scale.toFixed(2)}x</Label>
+                          <Slider value={[scale]} min={0.3} max={3} step={0.05}
+                            onValueChange={([v]) => update({ [scaleField]: v } as Partial<Match>)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Offset X: {x}px</Label>
+                            <Slider value={[x]} min={-300} max={300} step={1}
+                              onValueChange={([v]) => update({ [xField]: v } as Partial<Match>)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Offset Y: {y}px</Label>
+                            <Slider value={[y]} min={-200} max={200} step={1}
+                              onValueChange={([v]) => update({ [yField]: v } as Partial<Match>)} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center gap-2 h-16 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                        {uploading === field ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload {teamLabel} logo</span></>}
+                        <input type="file" accept="image/*" className="hidden"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, field); }} />
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
             </TabsContent>
 
             <TabsContent value="anim" className="space-y-5 pt-4">
