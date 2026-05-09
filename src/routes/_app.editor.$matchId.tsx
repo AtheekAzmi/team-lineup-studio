@@ -49,6 +49,11 @@ function Editor() {
       team_a_name: match.team_a_name, team_a_players: match.team_a_players, team_a_color: match.team_a_color,
       team_b_name: match.team_b_name, team_b_players: match.team_b_players, team_b_color: match.team_b_color,
       bg_from: match.bg_from, bg_to: match.bg_to,
+      bg_image_url: match.bg_image_url, bg_image_opacity: match.bg_image_opacity,
+      team_a_logo_url: match.team_a_logo_url, team_a_logo_scale: match.team_a_logo_scale,
+      team_a_logo_x: match.team_a_logo_x, team_a_logo_y: match.team_a_logo_y,
+      team_b_logo_url: match.team_b_logo_url, team_b_logo_scale: match.team_b_logo_scale,
+      team_b_logo_x: match.team_b_logo_x, team_b_logo_y: match.team_b_logo_y,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
