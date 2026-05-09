@@ -240,6 +240,85 @@ function Editor() {
                   ))}
                 </div>
               </div>
+
+              {/* Background image */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" />Background image</Label>
+                {match.bg_image_url ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <img src={match.bg_image_url} alt="bg" className="w-full h-24 object-cover rounded border border-border" />
+                      <Button size="icon" variant="destructive" className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => { update({ bg_image_url: null }); setPlayKey(k => k + 1); }}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Opacity: {Math.round(match.bg_image_opacity * 100)}%</Label>
+                      <Slider value={[match.bg_image_opacity]} min={0} max={1} step={0.05}
+                        onValueChange={([v]) => update({ bg_image_opacity: v })} />
+                    </div>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 h-20 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                    {uploading === "bg_image_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload background</span></>}
+                    <input type="file" accept="image/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, "bg_image_url"); }} />
+                  </label>
+                )}
+              </div>
+
+              {/* Logos */}
+              {(["a", "b"] as const).map((side) => {
+                const field = side === "a" ? "team_a_logo_url" : "team_b_logo_url";
+                const scaleField = side === "a" ? "team_a_logo_scale" : "team_b_logo_scale";
+                const xField = side === "a" ? "team_a_logo_x" : "team_b_logo_x";
+                const yField = side === "a" ? "team_a_logo_y" : "team_b_logo_y";
+                const url = match[field];
+                const scale = match[scaleField];
+                const x = match[xField];
+                const y = match[yField];
+                const teamLabel = side === "a" ? match.team_a_name : match.team_b_name;
+                return (
+                  <div key={side} className="space-y-2 pt-4 border-t border-border">
+                    <Label className="text-sm font-medium">{teamLabel} logo</Label>
+                    {url ? (
+                      <div className="space-y-3">
+                        <div className="relative w-fit">
+                          <img src={url} alt="logo" className="h-20 w-20 object-contain rounded border border-border bg-muted/30 p-1" />
+                          <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6"
+                            onClick={() => update({ [field]: null } as Partial<Match>)}>
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Size: {scale.toFixed(2)}x</Label>
+                          <Slider value={[scale]} min={0.3} max={3} step={0.05}
+                            onValueChange={([v]) => update({ [scaleField]: v } as Partial<Match>)} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Offset X: {x}px</Label>
+                            <Slider value={[x]} min={-300} max={300} step={1}
+                              onValueChange={([v]) => update({ [xField]: v } as Partial<Match>)} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Offset Y: {y}px</Label>
+                            <Slider value={[y]} min={-200} max={200} step={1}
+                              onValueChange={([v]) => update({ [yField]: v } as Partial<Match>)} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center gap-2 h-16 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                        {uploading === field ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload {teamLabel} logo</span></>}
+                        <input type="file" accept="image/*" className="hidden"
+                          onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, field); }} />
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
             </TabsContent>
 
             <TabsContent value="anim" className="space-y-5 pt-4">
