@@ -26,6 +26,28 @@ function Editor() {
   const [playKey, setPlayKey] = useState(0);
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState<null | { progress: number; format: string }>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
+
+  const uploadAsset = async (
+    file: File,
+    field: "bg_image_url" | "team_a_logo_url" | "team_b_logo_url",
+  ) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) { toast.error("Not signed in"); return; }
+    setUploading(field);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `${uid}/${field}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("lineup-assets").upload(path, file, {
+      cacheControl: "3600", upsert: true, contentType: file.type,
+    });
+    if (upErr) { setUploading(null); toast.error(upErr.message); return; }
+    const { data: pub } = supabase.storage.from("lineup-assets").getPublicUrl(path);
+    update({ [field]: pub.publicUrl } as Partial<Match>);
+    setUploading(null);
+    setPlayKey(k => k + 1);
+    toast.success("Uploaded");
+  };
 
   useEffect(() => {
     supabase.from("matches").select("*").eq("id", matchId).single().then(({ data, error }) => {
