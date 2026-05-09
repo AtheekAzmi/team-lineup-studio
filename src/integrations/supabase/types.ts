@@ -19,14 +19,24 @@ export type Database = {
           animation_speed: number
           animation_style: string
           bg_from: string
+          bg_image_opacity: number
+          bg_image_url: string | null
           bg_to: string
           created_at: string
           id: string
           subtitle: string
           team_a_color: string
+          team_a_logo_scale: number
+          team_a_logo_url: string | null
+          team_a_logo_x: number
+          team_a_logo_y: number
           team_a_name: string
           team_a_players: Json
           team_b_color: string
+          team_b_logo_scale: number
+          team_b_logo_url: string | null
+          team_b_logo_x: number
+          team_b_logo_y: number
           team_b_name: string
           team_b_players: Json
           title: string
@@ -37,14 +47,24 @@ export type Database = {
           animation_speed?: number
           animation_style?: string
           bg_from?: string
+          bg_image_opacity?: number
+          bg_image_url?: string | null
           bg_to?: string
           created_at?: string
           id?: string
           subtitle?: string
           team_a_color?: string
+          team_a_logo_scale?: number
+          team_a_logo_url?: string | null
+          team_a_logo_x?: number
+          team_a_logo_y?: number
           team_a_name?: string
           team_a_players?: Json
           team_b_color?: string
+          team_b_logo_scale?: number
+          team_b_logo_url?: string | null
+          team_b_logo_x?: number
+          team_b_logo_y?: number
           team_b_name?: string
           team_b_players?: Json
           title?: string
@@ -55,14 +75,24 @@ export type Database = {
           animation_speed?: number
           animation_style?: string
           bg_from?: string
+          bg_image_opacity?: number
+          bg_image_url?: string | null
           bg_to?: string
           created_at?: string
           id?: string
           subtitle?: string
           team_a_color?: string
+          team_a_logo_scale?: number
+          team_a_logo_url?: string | null
+          team_a_logo_x?: number
+          team_a_logo_y?: number
           team_a_name?: string
           team_a_players?: Json
           team_b_color?: string
+          team_b_logo_scale?: number
+          team_b_logo_url?: string | null
+          team_b_logo_x?: number
+          team_b_logo_y?: number
           team_b_name?: string
           team_b_players?: Json
           title?: string
