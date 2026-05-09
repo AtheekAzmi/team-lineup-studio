@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeft, Download, Loader2, Plus, Save, Trash2, Play } from "lucide-react";
+import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
 import { ANIMATION_STYLES, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
 import { downloadBlob, exportLineupVideo } from "@/lib/lineup-export";
