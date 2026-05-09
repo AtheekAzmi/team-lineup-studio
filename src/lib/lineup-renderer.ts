@@ -1,13 +1,22 @@
 import type { AnimationStyle, Match } from "./lineup-types";
 
-export const CANVAS_W = 1280;
-export const CANVAS_H = 720;
-export const ROW_DURATION = 0.35;
-export const HOLD_DURATION = 2.5;
+export const CANVAS_W = 1536;
+export const CANVAS_H = 896;
+export const ROW_DURATION = 0.45;
+export const HOLD_DURATION = 9;
+export const MIN_DURATION = 15;
+export const MAX_DURATION = 20;
+
+// Brand assets shown on every lineup
+export const BRAND_LEFT_LOGO = "/branding/sports-festival-logo.png";
+export const BRAND_RIGHT_LOGO = "/branding/oba-logo.png";
+export const VS_BADGE_IMAGE = "/branding/vs.png";
 
 export const totalDuration = (m: Match) => {
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
-  return (rows * ROW_DURATION + HOLD_DURATION) / Math.max(0.25, m.animation_speed);
+  const base = rows * ROW_DURATION + HOLD_DURATION;
+  const clamped = Math.min(MAX_DURATION, Math.max(MIN_DURATION, base));
+  return clamped / Math.max(0.25, m.animation_speed);
 };
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
