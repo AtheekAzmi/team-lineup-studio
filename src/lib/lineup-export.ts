@@ -28,6 +28,7 @@ export async function exportLineupVideo(
   format: ExportFormat,
   onProgress?: (p: number) => void
 ): Promise<{ blob: Blob; ext: string }> {
+  await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url]);
   const canvas = document.createElement("canvas");
   canvas.width = CANVAS_W;
   canvas.height = CANVAS_H;
