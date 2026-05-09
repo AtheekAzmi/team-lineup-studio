@@ -1,4 +1,4 @@
-import { CANVAS_H, CANVAS_W, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
+import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, CANVAS_H, CANVAS_W, VS_BADGE_IMAGE, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
 import type { Match } from "./lineup-types";
 
 export type ExportFormat = "mp4" | "webm";
