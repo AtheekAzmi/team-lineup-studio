@@ -311,7 +311,7 @@ function drawRow(
   ctx.fillStyle = shade(color, -0.35);
   ctx.fill();
 
-  ctx.fillStyle = "#1a1a1a";
+  ctx.fillStyle = textColor;
   ctx.font = "800 22px system-ui, sans-serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(String(index + 1).padStart(2, "0"), x + h / 2, y + h / 2);
