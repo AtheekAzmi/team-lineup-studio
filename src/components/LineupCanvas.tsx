@@ -18,7 +18,7 @@ export function LineupCanvas({ match, playKey, loop = true, onCanvasReady }: Pro
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
     onCanvasReady?.(canvas);
-    preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url, BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE]);
+    preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url, match.vs_badge_url, BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE]);
     startRef.current = performance.now();
     const dur = totalDuration(match);
 

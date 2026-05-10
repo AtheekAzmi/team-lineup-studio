@@ -30,7 +30,7 @@ function Editor() {
 
   const uploadAsset = async (
     file: File,
-    field: "bg_image_url" | "team_a_logo_url" | "team_b_logo_url",
+    field: "bg_image_url" | "team_a_logo_url" | "team_b_logo_url" | "vs_badge_url",
   ) => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData.user?.id;
@@ -76,6 +76,7 @@ function Editor() {
       team_a_logo_x: match.team_a_logo_x, team_a_logo_y: match.team_a_logo_y,
       team_b_logo_url: match.team_b_logo_url, team_b_logo_scale: match.team_b_logo_scale,
       team_b_logo_x: match.team_b_logo_x, team_b_logo_y: match.team_b_logo_y,
+      vs_badge_url: match.vs_badge_url,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
@@ -319,6 +320,27 @@ function Editor() {
                   </div>
                 );
               })}
+
+              {/* VS badge */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" />VS badge (transparent PNG)</Label>
+                {match.vs_badge_url ? (
+                  <div className="relative w-fit">
+                    <img src={match.vs_badge_url} alt="vs" className="h-20 w-20 object-contain rounded border border-border bg-muted/30 p-1" />
+                    <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => { update({ vs_badge_url: null }); setPlayKey(k => k + 1); }}>
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 h-16 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                    {uploading === "vs_badge_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload VS badge</span></>}
+                    <input type="file" accept="image/png,image/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, "vs_badge_url"); }} />
+                  </label>
+                )}
+                <p className="text-xs text-muted-foreground">Defaults to the built-in VS graphic if empty.</p>
+              </div>
             </TabsContent>
 
             <TabsContent value="anim" className="space-y-5 pt-4">

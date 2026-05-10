@@ -39,6 +39,7 @@ export interface Match {
   team_b_logo_scale: number;
   team_b_logo_x: number;
   team_b_logo_y: number;
+  vs_badge_url: string | null;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
@@ -64,6 +65,7 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   team_b_logo_scale: 1,
   team_b_logo_x: 0,
   team_b_logo_y: 0,
+  vs_badge_url: null,
   animation_style: "rise",
   animation_speed: 1,
 });
