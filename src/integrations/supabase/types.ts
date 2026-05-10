@@ -24,7 +24,9 @@ export type Database = {
           bg_to: string
           created_at: string
           id: string
+          player_text_color: string
           subtitle: string
+          subtitle_color: string
           team_a_color: string
           team_a_logo_scale: number
           team_a_logo_url: string | null
@@ -40,6 +42,9 @@ export type Database = {
           team_b_name: string
           team_b_players: Json
           title: string
+          title_color: string
+          title_font: string
+          title_size: number
           updated_at: string
           user_id: string
           vs_badge_url: string | null
@@ -53,7 +58,9 @@ export type Database = {
           bg_to?: string
           created_at?: string
           id?: string
+          player_text_color?: string
           subtitle?: string
+          subtitle_color?: string
           team_a_color?: string
           team_a_logo_scale?: number
           team_a_logo_url?: string | null
@@ -69,6 +76,9 @@ export type Database = {
           team_b_name?: string
           team_b_players?: Json
           title?: string
+          title_color?: string
+          title_font?: string
+          title_size?: number
           updated_at?: string
           user_id: string
           vs_badge_url?: string | null
@@ -82,7 +92,9 @@ export type Database = {
           bg_to?: string
           created_at?: string
           id?: string
+          player_text_color?: string
           subtitle?: string
+          subtitle_color?: string
           team_a_color?: string
           team_a_logo_scale?: number
           team_a_logo_url?: string | null
@@ -98,6 +110,9 @@ export type Database = {
           team_b_name?: string
           team_b_players?: Json
           title?: string
+          title_color?: string
+          title_font?: string
+          title_size?: number
           updated_at?: string
           user_id?: string
           vs_badge_url?: string | null
