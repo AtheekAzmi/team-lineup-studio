@@ -40,9 +40,29 @@ export interface Match {
   team_b_logo_x: number;
   team_b_logo_y: number;
   vs_badge_url: string | null;
+  title_color: string;
+  title_font: string;
+  title_size: number;
+  subtitle_color: string;
+  player_text_color: string;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
+
+export const FONT_OPTIONS: { id: string; label: string }[] = [
+  { id: "system-ui, sans-serif", label: "System Sans" },
+  { id: "'Inter', system-ui, sans-serif", label: "Inter" },
+  { id: "'Bebas Neue', Impact, sans-serif", label: "Bebas Neue" },
+  { id: "'Oswald', Impact, sans-serif", label: "Oswald" },
+  { id: "'Anton', Impact, sans-serif", label: "Anton" },
+  { id: "'Archivo Black', system-ui, sans-serif", label: "Archivo Black" },
+  { id: "'Bebas Neue', 'Archivo Black', sans-serif", label: "Display Condensed" },
+  { id: "'Montserrat', sans-serif", label: "Montserrat" },
+  { id: "'Poppins', sans-serif", label: "Poppins" },
+  { id: "Georgia, 'Times New Roman', serif", label: "Serif" },
+  { id: "'Playfair Display', Georgia, serif", label: "Playfair" },
+  { id: "Impact, 'Arial Black', sans-serif", label: "Impact" },
+];
 
 export const defaultMatch = (): Omit<Match, "id"> => ({
   title: "HUMAISARIAN SPORTS FESTIVAL - 2026",
@@ -66,6 +86,11 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   team_b_logo_x: 0,
   team_b_logo_y: 0,
   vs_badge_url: null,
+  title_color: "#ffffff",
+  title_font: "system-ui, sans-serif",
+  title_size: 44,
+  subtitle_color: "#e5e7eb",
+  player_text_color: "#1a1a1a",
   animation_style: "rise",
   animation_speed: 1,
 });

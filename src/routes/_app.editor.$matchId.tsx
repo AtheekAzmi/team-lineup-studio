@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
-import { ANIMATION_STYLES, type Match } from "@/lib/lineup-types";
+import { ANIMATION_STYLES, FONT_OPTIONS, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
 import { downloadBlob, exportLineupVideo } from "@/lib/lineup-export";
 import { toast } from "sonner";
@@ -77,6 +77,8 @@ function Editor() {
       team_b_logo_url: match.team_b_logo_url, team_b_logo_scale: match.team_b_logo_scale,
       team_b_logo_x: match.team_b_logo_x, team_b_logo_y: match.team_b_logo_y,
       vs_badge_url: match.vs_badge_url,
+      title_color: match.title_color, title_font: match.title_font, title_size: match.title_size,
+      subtitle_color: match.subtitle_color, player_text_color: match.player_text_color,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
@@ -211,6 +213,38 @@ function Editor() {
                 <div className="space-y-2">
                   <Label>Team B color</Label>
                   <Input type="color" value={match.team_b_color} onChange={(e) => update({ team_b_color: e.target.value })} className="h-10 p-1" />
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-border">
+                <p className="text-sm font-medium pt-3">Title & text</p>
+                <div className="space-y-2">
+                  <Label>Title font</Label>
+                  <Select value={match.title_font} onValueChange={(v) => update({ title_font: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {FONT_OPTIONS.map(f => <SelectItem key={f.id} value={f.id} style={{ fontFamily: f.id }}>{f.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Title size: {Math.round(match.title_size)}px</Label>
+                  <Slider value={[match.title_size]} min={20} max={96} step={1}
+                    onValueChange={([v]) => update({ title_size: v })} />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Title color</Label>
+                    <Input type="color" value={match.title_color} onChange={(e) => update({ title_color: e.target.value })} className="h-10 p-1" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Subtitle color</Label>
+                    <Input type="color" value={match.subtitle_color} onChange={(e) => update({ subtitle_color: e.target.value })} className="h-10 p-1" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Player text</Label>
+                    <Input type="color" value={match.player_text_color} onChange={(e) => update({ player_text_color: e.target.value })} className="h-10 p-1" />
+                  </div>
                 </div>
               </div>
 

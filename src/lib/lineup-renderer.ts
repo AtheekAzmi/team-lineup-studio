@@ -100,13 +100,15 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.save();
   ctx.globalAlpha = headerProg;
   ctx.translate(0, (1 - headerProg) * -20);
-  ctx.fillStyle = "#fff";
+  const font = m.title_font || "system-ui, sans-serif";
+  const titleSize = Math.max(16, Math.min(120, m.title_size || 44));
+  ctx.fillStyle = m.title_color || "#fff";
   ctx.textAlign = "center";
-  ctx.font = "700 44px system-ui, sans-serif";
-  ctx.fillText(m.title, CANVAS_W / 2, 78);
-  ctx.font = "600 26px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 116);
+  ctx.font = `800 ${titleSize}px ${font}`;
+  ctx.fillText(m.title, CANVAS_W / 2, 40 + titleSize * 0.7);
+  ctx.fillStyle = m.subtitle_color || "rgba(255,255,255,0.85)";
+  ctx.font = `600 ${Math.round(titleSize * 0.6)}px ${font}`;
+  ctx.fillText(m.subtitle, CANVAS_W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
   ctx.restore();
 
   // Brand logos flanking title (left = sports festival, right = OBA)
@@ -189,7 +191,7 @@ function drawLogo(
   ctx.restore();
 }
 
-function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, name: string, color: string, prog: number) {
+function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, name: string, color: string, textColor: string, prog: number) {
   ctx.save();
   ctx.globalAlpha = prog;
   ctx.translate(0, (1 - prog) * 20);
@@ -199,7 +201,7 @@ function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: 
   g.addColorStop(1, shade(color, -0.2));
   roundRect(ctx, x, y, w, 50, 8);
   ctx.fillStyle = g; ctx.fill();
-  ctx.fillStyle = "#1a1a1a";
+  ctx.fillStyle = textColor;
   ctx.font = "800 30px system-ui, sans-serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(name, x + w / 2, y + 25);
@@ -228,7 +230,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 function drawRow(
   ctx: CanvasRenderingContext2D,
   x: number, y: number, w: number, h: number,
-  index: number, name: string, color: string,
+  index: number, name: string, color: string, textColor: string,
   rowProg: number, style: AnimationStyle, side: "L" | "R"
 ) {
   if (rowProg <= 0) return;
@@ -309,7 +311,7 @@ function drawRow(
   ctx.fillStyle = shade(color, -0.35);
   ctx.fill();
 
-  ctx.fillStyle = "#1a1a1a";
+  ctx.fillStyle = textColor;
   ctx.font = "800 22px system-ui, sans-serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(String(index + 1).padStart(2, "0"), x + h / 2, y + h / 2);
@@ -334,8 +336,8 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
-  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, teamProg);
-  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, teamProg);
+  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, m.player_text_color || "#1a1a1a", teamProg);
+  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, m.player_text_color || "#1a1a1a", teamProg);
 
   // Team logos centered above each team header (user-supplied per match)
   const logoProg = easeOut(clamp01((t - 0.1) / 0.6));
@@ -360,10 +362,10 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
     const y = rowsStartY + i * (rowH + rowGap);
 
     if (m.team_a_players[i]) {
-      drawRow(ctx, colAX, y, colW, rowH, i, m.team_a_players[i], m.team_a_color, rowProg, m.animation_style, "L");
+      drawRow(ctx, colAX, y, colW, rowH, i, m.team_a_players[i], m.team_a_color, m.player_text_color || "#1a1a1a", rowProg, m.animation_style, "L");
     }
     if (m.team_b_players[i]) {
-      drawRow(ctx, colBX, y, colW, rowH, i, m.team_b_players[i], m.team_b_color, rowProg, m.animation_style, "R");
+      drawRow(ctx, colBX, y, colW, rowH, i, m.team_b_players[i], m.team_b_color, m.player_text_color || "#1a1a1a", rowProg, m.animation_style, "R");
     }
   }
 }
