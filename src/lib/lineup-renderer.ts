@@ -336,8 +336,8 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
-  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, teamProg);
-  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, teamProg);
+  drawTeamHeader(ctx, colAX, headerY, colW, m.team_a_name, m.team_a_color, m.player_text_color || "#1a1a1a", teamProg);
+  drawTeamHeader(ctx, colBX, headerY, colW, m.team_b_name, m.team_b_color, m.player_text_color || "#1a1a1a", teamProg);
 
   // Team logos centered above each team header (user-supplied per match)
   const logoProg = easeOut(clamp01((t - 0.1) / 0.6));
