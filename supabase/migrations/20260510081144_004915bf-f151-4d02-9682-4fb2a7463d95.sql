@@ -1,0 +1,3 @@
+ALTER TABLE public.matches
+  ADD COLUMN IF NOT EXISTS card_width numeric NOT NULL DEFAULT 480,
+  ADD COLUMN IF NOT EXISTS card_height numeric NOT NULL DEFAULT 0;
