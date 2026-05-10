@@ -100,13 +100,15 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.save();
   ctx.globalAlpha = headerProg;
   ctx.translate(0, (1 - headerProg) * -20);
-  ctx.fillStyle = "#fff";
+  const font = m.title_font || "system-ui, sans-serif";
+  const titleSize = Math.max(16, Math.min(120, m.title_size || 44));
+  ctx.fillStyle = m.title_color || "#fff";
   ctx.textAlign = "center";
-  ctx.font = "700 44px system-ui, sans-serif";
-  ctx.fillText(m.title, CANVAS_W / 2, 78);
-  ctx.font = "600 26px system-ui, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 116);
+  ctx.font = `800 ${titleSize}px ${font}`;
+  ctx.fillText(m.title, CANVAS_W / 2, 40 + titleSize * 0.7);
+  ctx.fillStyle = m.subtitle_color || "rgba(255,255,255,0.85)";
+  ctx.font = `600 ${Math.round(titleSize * 0.6)}px ${font}`;
+  ctx.fillText(m.subtitle, CANVAS_W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
   ctx.restore();
 
   // Brand logos flanking title (left = sports festival, right = OBA)
