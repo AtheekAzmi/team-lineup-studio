@@ -410,3 +410,34 @@ function Editor() {
     </div>
   );
 }
+
+function BulkImport({ onImport }: { onImport: (names: string[], mode: "replace" | "append") => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const parse = () =>
+    text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if (!open) {
+    return (
+      <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>
+        <Upload className="w-4 h-4 mr-1" />Bulk import
+      </Button>
+    );
+  }
+  return (
+    <div className="space-y-2 p-3 border border-border rounded-md bg-muted/30">
+      <Label className="text-xs">Paste names — separated by comma or new line</Label>
+      <Textarea rows={5} value={text} onChange={(e) => setText(e.target.value)}
+        placeholder={"PLAYER ONE\nPLAYER TWO\nPLAYER THREE\n\nor: Player One, Player Two, Player Three"} />
+      <p className="text-xs text-muted-foreground">{parse().length} player(s) detected</p>
+      <div className="flex gap-2 flex-wrap">
+        <Button size="sm" onClick={() => { const n = parse(); if (n.length) { onImport(n, "replace"); setOpen(false); setText(""); toast.success(`Replaced with ${n.length} players`); } }}>
+          Replace all
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => { const n = parse(); if (n.length) { onImport(n, "append"); setOpen(false); setText(""); toast.success(`Added ${n.length} players`); } }}>
+          Append
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => { setOpen(false); setText(""); }}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
