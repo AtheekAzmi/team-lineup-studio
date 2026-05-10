@@ -342,13 +342,15 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 70, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
   drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 70, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
-  drawVS(ctx, t);
+  drawVS(ctx, t, m.vs_badge_url);
 
-  const rowH = 38;
-  const rowGap = 6;
   const rowsStartY = headerY + 80;
-
-  const rows = Math.max(m.team_a_players.length, m.team_b_players.length);
+  const bottomGap = 15;
+  const rows = Math.max(m.team_a_players.length, m.team_b_players.length, 1);
+  const rowGap = 6;
+  // Auto-size row height so rows fill available space with a small bottom gap
+  const available = CANVAS_H - rowsStartY - bottomGap;
+  const rowH = Math.max(28, Math.min(56, Math.floor((available - rowGap * (rows - 1)) / rows)));
   const stagger = ROW_DURATION;
   const rowAnimDur = ROW_DURATION * 1.2;
 
