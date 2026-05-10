@@ -109,19 +109,27 @@ function Editor() {
     const players = side === "a" ? match.team_a_players : match.team_b_players;
     const set = (next: string[]) => update(side === "a" ? { team_a_players: next } : { team_b_players: next });
     return (
-      <div className="space-y-2">
-        {players.map((p, i) => (
-          <div key={i} className="flex gap-2">
-            <span className="text-xs text-muted-foreground w-6 self-center">{String(i + 1).padStart(2, "0")}</span>
-            <Input value={p} onChange={(e) => { const c = [...players]; c[i] = e.target.value; set(c); }} />
-            <Button size="icon" variant="ghost" onClick={() => set(players.filter((_, j) => j !== i))}>
-              <Trash2 className="w-4 h-4" />
+      <div className="space-y-3">
+        <BulkImport onImport={(names, mode) => set(mode === "replace" ? names : [...players, ...names])} />
+        <div className="space-y-2">
+          {players.map((p, i) => (
+            <div key={i} className="flex gap-2">
+              <span className="text-xs text-muted-foreground w-6 self-center">{String(i + 1).padStart(2, "0")}</span>
+              <Input value={p} onChange={(e) => { const c = [...players]; c[i] = e.target.value; set(c); }} />
+              <Button size="icon" variant="ghost" onClick={() => set(players.filter((_, j) => j !== i))}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => set([...players, "NEW PLAYER"])}>
+              <Plus className="w-4 h-4 mr-1" />Add player
             </Button>
+            {players.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={() => set([])}>Clear all</Button>
+            )}
           </div>
-        ))}
-        <Button size="sm" variant="outline" onClick={() => set([...players, "NEW PLAYER"])}>
-          <Plus className="w-4 h-4 mr-1" />Add player
-        </Button>
+        </div>
       </div>
     );
   };
