@@ -134,12 +134,12 @@ function drawBrandLogo(
   ctx.restore();
 }
 
-function drawVS(ctx: CanvasRenderingContext2D, t: number) {
+function drawVS(ctx: CanvasRenderingContext2D, t: number, badgeUrl?: string | null) {
   const p = easeOut(clamp01((t - 0.4) / 0.6));
   if (p <= 0) return;
   const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 30;
   const scale = 0.7 + 0.3 * p;
-  const img = getCachedImage(VS_BADGE_IMAGE);
+  const img = getCachedImage(badgeUrl || VS_BADGE_IMAGE);
   ctx.save();
   ctx.globalAlpha = p;
   ctx.translate(cx, cy);
