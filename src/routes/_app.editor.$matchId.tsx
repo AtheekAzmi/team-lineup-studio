@@ -77,6 +77,8 @@ function Editor() {
       team_b_logo_url: match.team_b_logo_url, team_b_logo_scale: match.team_b_logo_scale,
       team_b_logo_x: match.team_b_logo_x, team_b_logo_y: match.team_b_logo_y,
       vs_badge_url: match.vs_badge_url,
+      title_color: match.title_color, title_font: match.title_font, title_size: match.title_size,
+      subtitle_color: match.subtitle_color, player_text_color: match.player_text_color,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
