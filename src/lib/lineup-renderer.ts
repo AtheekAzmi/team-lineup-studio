@@ -191,7 +191,7 @@ function drawLogo(
   ctx.restore();
 }
 
-function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, name: string, color: string, prog: number) {
+function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, name: string, color: string, textColor: string, prog: number) {
   ctx.save();
   ctx.globalAlpha = prog;
   ctx.translate(0, (1 - prog) * 20);
@@ -201,7 +201,7 @@ function drawTeamHeader(ctx: CanvasRenderingContext2D, x: number, y: number, w: 
   g.addColorStop(1, shade(color, -0.2));
   roundRect(ctx, x, y, w, 50, 8);
   ctx.fillStyle = g; ctx.fill();
-  ctx.fillStyle = "#1a1a1a";
+  ctx.fillStyle = textColor;
   ctx.font = "800 30px system-ui, sans-serif";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(name, x + w / 2, y + 25);
