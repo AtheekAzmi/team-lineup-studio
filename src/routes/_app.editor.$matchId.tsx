@@ -255,7 +255,24 @@ function Editor() {
                     <Label className="text-xs">Player text</Label>
                     <Input type="color" value={match.player_text_color} onChange={(e) => update({ player_text_color: e.target.value })} className="h-10 p-1" />
                   </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-border">
+                <p className="text-sm font-medium pt-3">Player card size</p>
+                <div className="space-y-1">
+                  <Label className="text-xs">Card width: {Math.round(match.card_width)}px</Label>
+                  <Slider value={[match.card_width]} min={240} max={680} step={5}
+                    onValueChange={([v]) => update({ card_width: v })} />
                 </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">
+                    Card height: {match.card_height > 0 ? `${Math.round(match.card_height)}px` : "Auto"}
+                  </Label>
+                  <Slider value={[match.card_height]} min={0} max={100} step={1}
+                    onValueChange={([v]) => update({ card_height: v })} />
+                  <p className="text-[10px] text-muted-foreground">0 = auto-fit to available space</p>
+                </div>
+              </div>
               </div>
 
               <p className="text-sm font-medium pt-2">Background</p>
