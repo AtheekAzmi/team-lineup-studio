@@ -39,6 +39,7 @@ export interface Match {
   team_b_logo_scale: number;
   team_b_logo_x: number;
   team_b_logo_y: number;
+  vs_badge_url: string | null;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
