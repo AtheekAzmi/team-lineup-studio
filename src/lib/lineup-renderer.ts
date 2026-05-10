@@ -362,10 +362,10 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
     const y = rowsStartY + i * (rowH + rowGap);
 
     if (m.team_a_players[i]) {
-      drawRow(ctx, colAX, y, colW, rowH, i, m.team_a_players[i], m.team_a_color, rowProg, m.animation_style, "L");
+      drawRow(ctx, colAX, y, colW, rowH, i, m.team_a_players[i], m.team_a_color, m.player_text_color || "#1a1a1a", rowProg, m.animation_style, "L");
     }
     if (m.team_b_players[i]) {
-      drawRow(ctx, colBX, y, colW, rowH, i, m.team_b_players[i], m.team_b_color, rowProg, m.animation_style, "R");
+      drawRow(ctx, colBX, y, colW, rowH, i, m.team_b_players[i], m.team_b_color, m.player_text_color || "#1a1a1a", rowProg, m.animation_style, "R");
     }
   }
 }
