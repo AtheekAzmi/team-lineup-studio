@@ -216,6 +216,38 @@ function Editor() {
                 </div>
               </div>
 
+              <div className="space-y-3 pt-2 border-t border-border">
+                <p className="text-sm font-medium pt-3">Title & text</p>
+                <div className="space-y-2">
+                  <Label>Title font</Label>
+                  <Select value={match.title_font} onValueChange={(v) => update({ title_font: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {FONT_OPTIONS.map(f => <SelectItem key={f.id} value={f.id} style={{ fontFamily: f.id }}>{f.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Title size: {Math.round(match.title_size)}px</Label>
+                  <Slider value={[match.title_size]} min={20} max={96} step={1}
+                    onValueChange={([v]) => update({ title_size: v })} />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Title color</Label>
+                    <Input type="color" value={match.title_color} onChange={(e) => update({ title_color: e.target.value })} className="h-10 p-1" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Subtitle color</Label>
+                    <Input type="color" value={match.subtitle_color} onChange={(e) => update({ subtitle_color: e.target.value })} className="h-10 p-1" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Player text</Label>
+                    <Input type="color" value={match.player_text_color} onChange={(e) => update({ player_text_color: e.target.value })} className="h-10 p-1" />
+                  </div>
+                </div>
+              </div>
+
               <p className="text-sm font-medium pt-2">Background</p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
