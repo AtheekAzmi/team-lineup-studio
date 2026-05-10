@@ -42,6 +42,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          vs_badge_url: string | null
         }
         Insert: {
           animation_speed?: number
@@ -70,6 +71,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id: string
+          vs_badge_url?: string | null
         }
         Update: {
           animation_speed?: number
@@ -98,6 +100,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          vs_badge_url?: string | null
         }
         Relationships: []
       }
