@@ -320,6 +320,27 @@ function Editor() {
                   </div>
                 );
               })}
+
+              {/* VS badge */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" />VS badge (transparent PNG)</Label>
+                {match.vs_badge_url ? (
+                  <div className="relative w-fit">
+                    <img src={match.vs_badge_url} alt="vs" className="h-20 w-20 object-contain rounded border border-border bg-muted/30 p-1" />
+                    <Button size="icon" variant="destructive" className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => { update({ vs_badge_url: null }); setPlayKey(k => k + 1); }}>
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 h-16 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                    {uploading === "vs_badge_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload VS badge</span></>}
+                    <input type="file" accept="image/png,image/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, "vs_badge_url"); }} />
+                  </label>
+                )}
+                <p className="text-xs text-muted-foreground">Defaults to the built-in VS graphic if empty.</p>
+              </div>
             </TabsContent>
 
             <TabsContent value="anim" className="space-y-5 pt-4">
