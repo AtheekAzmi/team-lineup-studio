@@ -230,7 +230,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 function drawRow(
   ctx: CanvasRenderingContext2D,
   x: number, y: number, w: number, h: number,
-  index: number, name: string, color: string,
+  index: number, name: string, color: string, textColor: string,
   rowProg: number, style: AnimationStyle, side: "L" | "R"
 ) {
   if (rowProg <= 0) return;
