@@ -86,6 +86,11 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   team_b_logo_x: 0,
   team_b_logo_y: 0,
   vs_badge_url: null,
+  title_color: "#ffffff",
+  title_font: "system-ui, sans-serif",
+  title_size: 44,
+  subtitle_color: "#e5e7eb",
+  player_text_color: "#1a1a1a",
   animation_style: "rise",
   animation_speed: 1,
 });
