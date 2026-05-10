@@ -65,6 +65,7 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   team_b_logo_scale: 1,
   team_b_logo_x: 0,
   team_b_logo_y: 0,
+  vs_badge_url: null,
   animation_style: "rise",
   animation_speed: 1,
 });
