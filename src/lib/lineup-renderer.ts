@@ -311,13 +311,14 @@ function drawRow(
   ctx.fillStyle = shade(color, -0.35);
   ctx.fill();
 
+  const fs = Math.max(14, Math.min(48, Math.round(h * 0.55)));
   ctx.fillStyle = textColor;
-  ctx.font = "800 22px system-ui, sans-serif";
+  ctx.font = `800 ${fs}px system-ui, sans-serif`;
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(String(index + 1).padStart(2, "0"), x + h / 2, y + h / 2);
 
   ctx.textAlign = "left";
-  ctx.font = "700 22px system-ui, sans-serif";
+  ctx.font = `700 ${fs}px system-ui, sans-serif`;
   ctx.fillText(name.toUpperCase(), x + h + 14, y + h / 2);
 
   ctx.restore();
