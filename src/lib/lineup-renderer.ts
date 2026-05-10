@@ -311,13 +311,14 @@ function drawRow(
   ctx.fillStyle = shade(color, -0.35);
   ctx.fill();
 
+  const fs = Math.max(14, Math.min(48, Math.round(h * 0.55)));
   ctx.fillStyle = textColor;
-  ctx.font = "800 22px system-ui, sans-serif";
+  ctx.font = `800 ${fs}px system-ui, sans-serif`;
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   ctx.fillText(String(index + 1).padStart(2, "0"), x + h / 2, y + h / 2);
 
   ctx.textAlign = "left";
-  ctx.font = "700 22px system-ui, sans-serif";
+  ctx.font = `700 ${fs}px system-ui, sans-serif`;
   ctx.fillText(name.toUpperCase(), x + h + 14, y + h / 2);
 
   ctx.restore();
@@ -330,9 +331,10 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawBackground(ctx, m);
   drawHeader(ctx, m, t);
 
-  const colW = 480;
-  const colAX = 150;
-  const colBX = CANVAS_W - 150 - colW;
+  const colW = Math.max(200, Math.min(CANVAS_W / 2 - 60, m.card_width || 480));
+  const sideMargin = Math.max(40, (CANVAS_W - colW * 2 - 120) / 2);
+  const colAX = sideMargin;
+  const colBX = CANVAS_W - sideMargin - colW;
   const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
@@ -350,9 +352,12 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   const bottomGap = 15;
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length, 1);
   const rowGap = 6;
-  // Auto-size row height so rows fill available space with a small bottom gap
+  // Auto-size row height so rows fill available space with a small bottom gap, or use manual override
   const available = CANVAS_H - rowsStartY - bottomGap;
-  const rowH = Math.max(28, Math.min(56, Math.floor((available - rowGap * (rows - 1)) / rows)));
+  const autoH = Math.floor((available - rowGap * (rows - 1)) / rows);
+  const rowH = m.card_height && m.card_height > 0
+    ? Math.max(20, Math.min(120, m.card_height))
+    : Math.max(28, Math.min(56, autoH));
   const stagger = ROW_DURATION;
   const rowAnimDur = ROW_DURATION * 1.2;
 

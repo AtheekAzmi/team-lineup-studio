@@ -22,6 +22,8 @@ export type Database = {
           bg_image_opacity: number
           bg_image_url: string | null
           bg_to: string
+          card_height: number
+          card_width: number
           created_at: string
           id: string
           player_text_color: string
@@ -56,6 +58,8 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          card_height?: number
+          card_width?: number
           created_at?: string
           id?: string
           player_text_color?: string
@@ -90,6 +94,8 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          card_height?: number
+          card_width?: number
           created_at?: string
           id?: string
           player_text_color?: string

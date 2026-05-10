@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
 import { ANIMATION_STYLES, FONT_OPTIONS, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
@@ -79,6 +80,7 @@ function Editor() {
       vs_badge_url: match.vs_badge_url,
       title_color: match.title_color, title_font: match.title_font, title_size: match.title_size,
       subtitle_color: match.subtitle_color, player_text_color: match.player_text_color,
+      card_width: match.card_width, card_height: match.card_height,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
@@ -108,19 +110,27 @@ function Editor() {
     const players = side === "a" ? match.team_a_players : match.team_b_players;
     const set = (next: string[]) => update(side === "a" ? { team_a_players: next } : { team_b_players: next });
     return (
-      <div className="space-y-2">
-        {players.map((p, i) => (
-          <div key={i} className="flex gap-2">
-            <span className="text-xs text-muted-foreground w-6 self-center">{String(i + 1).padStart(2, "0")}</span>
-            <Input value={p} onChange={(e) => { const c = [...players]; c[i] = e.target.value; set(c); }} />
-            <Button size="icon" variant="ghost" onClick={() => set(players.filter((_, j) => j !== i))}>
-              <Trash2 className="w-4 h-4" />
+      <div className="space-y-3">
+        <BulkImport onImport={(names, mode) => set(mode === "replace" ? names : [...players, ...names])} />
+        <div className="space-y-2">
+          {players.map((p, i) => (
+            <div key={i} className="flex gap-2">
+              <span className="text-xs text-muted-foreground w-6 self-center">{String(i + 1).padStart(2, "0")}</span>
+              <Input value={p} onChange={(e) => { const c = [...players]; c[i] = e.target.value; set(c); }} />
+              <Button size="icon" variant="ghost" onClick={() => set(players.filter((_, j) => j !== i))}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => set([...players, "NEW PLAYER"])}>
+              <Plus className="w-4 h-4 mr-1" />Add player
             </Button>
+            {players.length > 0 && (
+              <Button size="sm" variant="ghost" onClick={() => set([])}>Clear all</Button>
+            )}
           </div>
-        ))}
-        <Button size="sm" variant="outline" onClick={() => set([...players, "NEW PLAYER"])}>
-          <Plus className="w-4 h-4 mr-1" />Add player
-        </Button>
+        </div>
       </div>
     );
   };
@@ -245,7 +255,24 @@ function Editor() {
                     <Label className="text-xs">Player text</Label>
                     <Input type="color" value={match.player_text_color} onChange={(e) => update({ player_text_color: e.target.value })} className="h-10 p-1" />
                   </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-border">
+                <p className="text-sm font-medium pt-3">Player card size</p>
+                <div className="space-y-1">
+                  <Label className="text-xs">Card width: {Math.round(match.card_width)}px</Label>
+                  <Slider value={[match.card_width]} min={240} max={680} step={5}
+                    onValueChange={([v]) => update({ card_width: v })} />
                 </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">
+                    Card height: {match.card_height > 0 ? `${Math.round(match.card_height)}px` : "Auto"}
+                  </Label>
+                  <Slider value={[match.card_height]} min={0} max={100} step={1}
+                    onValueChange={([v]) => update({ card_height: v })} />
+                  <p className="text-[10px] text-muted-foreground">0 = auto-fit to available space</p>
+                </div>
+              </div>
               </div>
 
               <p className="text-sm font-medium pt-2">Background</p>
@@ -396,6 +423,37 @@ function Editor() {
             </TabsContent>
           </Tabs>
         </Card>
+      </div>
+    </div>
+  );
+}
+
+function BulkImport({ onImport }: { onImport: (names: string[], mode: "replace" | "append") => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const parse = () =>
+    text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if (!open) {
+    return (
+      <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>
+        <Upload className="w-4 h-4 mr-1" />Bulk import
+      </Button>
+    );
+  }
+  return (
+    <div className="space-y-2 p-3 border border-border rounded-md bg-muted/30">
+      <Label className="text-xs">Paste names — separated by comma or new line</Label>
+      <Textarea rows={5} value={text} onChange={(e) => setText(e.target.value)}
+        placeholder={"PLAYER ONE\nPLAYER TWO\nPLAYER THREE\n\nor: Player One, Player Two, Player Three"} />
+      <p className="text-xs text-muted-foreground">{parse().length} player(s) detected</p>
+      <div className="flex gap-2 flex-wrap">
+        <Button size="sm" onClick={() => { const n = parse(); if (n.length) { onImport(n, "replace"); setOpen(false); setText(""); toast.success(`Replaced with ${n.length} players`); } }}>
+          Replace all
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => { const n = parse(); if (n.length) { onImport(n, "append"); setOpen(false); setText(""); toast.success(`Added ${n.length} players`); } }}>
+          Append
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => { setOpen(false); setText(""); }}>Cancel</Button>
       </div>
     </div>
   );
