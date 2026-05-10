@@ -1,7 +1,7 @@
 import type { AnimationStyle, Match } from "./lineup-types";
 
 export const CANVAS_W = 1536;
-export const CANVAS_H = 896;
+export const CANVAS_H = 1024;
 export const ROW_DURATION = 0.45;
 export const HOLD_DURATION = 9;
 export const MIN_DURATION = 15;
