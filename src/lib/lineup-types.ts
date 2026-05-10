@@ -93,6 +93,8 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   title_size: 44,
   subtitle_color: "#e5e7eb",
   player_text_color: "#1a1a1a",
+  card_width: 480,
+  card_height: 0,
   animation_style: "rise",
   animation_speed: 1,
 });
