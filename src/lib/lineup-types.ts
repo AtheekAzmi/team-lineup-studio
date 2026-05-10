@@ -45,6 +45,8 @@ export interface Match {
   title_size: number;
   subtitle_color: string;
   player_text_color: string;
+  card_width: number;
+  card_height: number;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
