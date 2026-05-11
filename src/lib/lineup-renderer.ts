@@ -135,31 +135,31 @@ function drawBrandLogo(
   ctx.restore();
 }
 
-function drawVS(ctx: CanvasRenderingContext2D, t: number, badgeUrl?: string | null) {
+function drawVS(ctx: CanvasRenderingContext2D, m: Match, t: number, cx: number, cy: number, gap: number) {
   const p = easeOut(clamp01((t - 0.4) / 0.6));
   if (p <= 0) return;
-  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 30;
   const scale = 0.7 + 0.3 * p;
-  const img = getCachedImage(badgeUrl || VS_BADGE_IMAGE);
+  const img = getCachedImage(m.vs_badge_url || VS_BADGE_IMAGE);
+  // Target size: fits inside gap with 24px margin on each side, capped by canvas height.
+  const target = Math.max(120, Math.min(canvasH(m) * 0.45, gap - 48));
   ctx.save();
   ctx.globalAlpha = p;
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
   if (img) {
-    const target = 280;
     const ratio = img.width / img.height || 1;
     const w = ratio >= 1 ? target : target * ratio;
     const h = ratio >= 1 ? target / ratio : target;
     ctx.drawImage(img, -w / 2, -h / 2, w, h);
   } else {
-    // Fallback vector VS while image loads
+    const s = target / 280;
     ctx.fillStyle = "#fde047";
     ctx.beginPath();
-    ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
-    ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
+    ctx.moveTo(-30 * s, -70 * s); ctx.lineTo(10 * s, -10 * s); ctx.lineTo(-15 * s, -5 * s);
+    ctx.lineTo(30 * s, 70 * s); ctx.lineTo(-10 * s, 10 * s); ctx.lineTo(15 * s, 5 * s);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = "#fff";
-    ctx.font = "900 80px system-ui, sans-serif";
+    ctx.font = `900 ${Math.round(80 * s)}px system-ui, sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("VS", 0, 0);
   }
