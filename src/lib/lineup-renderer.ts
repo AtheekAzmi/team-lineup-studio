@@ -62,27 +62,23 @@ export function preloadImages(urls: (string | null | undefined)[]): Promise<void
 }
 
 function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
-  const grad = ctx.createLinearGradient(0, 0, CANVAS_W, CANVAS_H);
+  const W = canvasW(m), H = canvasH(m);
+  const grad = ctx.createLinearGradient(0, 0, W, H);
   grad.addColorStop(0, m.bg_from);
   grad.addColorStop(1, m.bg_to);
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+  ctx.fillRect(0, 0, W, H);
 
   if (m.bg_image_url) {
     const img = getCachedImage(m.bg_image_url);
     if (img) {
-      // cover-fit
       const ir = img.width / img.height;
-      const cr = CANVAS_W / CANVAS_H;
-      let dw = CANVAS_W, dh = CANVAS_H, dx = 0, dy = 0;
+      const cr = W / H;
+      let dw = W, dh = H, dx = 0, dy = 0;
       if (ir > cr) {
-        dh = CANVAS_H;
-        dw = dh * ir;
-        dx = (CANVAS_W - dw) / 2;
+        dh = H; dw = dh * ir; dx = (W - dw) / 2;
       } else {
-        dw = CANVAS_W;
-        dh = dw / ir;
-        dy = (CANVAS_H - dh) / 2;
+        dw = W; dh = dw / ir; dy = (H - dh) / 2;
       }
       ctx.save();
       ctx.globalAlpha = clamp01(m.bg_image_opacity);
@@ -91,11 +87,11 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
     }
   }
 
-  const v = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, 200, CANVAS_W / 2, CANVAS_H / 2, 800);
+  const v = ctx.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, Math.max(W, H) * 0.6);
   v.addColorStop(0, "rgba(0,0,0,0)");
   v.addColorStop(1, "rgba(0,0,0,0.45)");
   ctx.fillStyle = v;
-  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+  ctx.fillRect(0, 0, W, H);
 }
 
 function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
