@@ -30,6 +30,7 @@ export type Database = {
           created_at: string
           id: string
           player_text_color: string
+          sort_order: number
           subtitle: string
           subtitle_color: string
           team_a_color: string
@@ -69,6 +70,7 @@ export type Database = {
           created_at?: string
           id?: string
           player_text_color?: string
+          sort_order?: number
           subtitle?: string
           subtitle_color?: string
           team_a_color?: string
@@ -108,6 +110,7 @@ export type Database = {
           created_at?: string
           id?: string
           player_text_color?: string
+          sort_order?: number
           subtitle?: string
           subtitle_color?: string
           team_a_color?: string
