@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, CANVAS_H, CANVAS_W, VS_BADGE_IMAGE, preloadImages, renderFrame, totalDuration } from "@/lib/lineup-renderer";
+import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE, canvasH, canvasW, preloadImages, renderFrame, totalDuration } from "@/lib/lineup-renderer";
 import type { Match } from "@/lib/lineup-types";
 
 interface Props {
   match: Match;
-  playKey: number; // change to restart
+  playKey: number;
   loop?: boolean;
   onCanvasReady?: (canvas: HTMLCanvasElement) => void;
 }
@@ -38,9 +38,10 @@ export function LineupCanvas({ match, playKey, loop = true, onCanvasReady }: Pro
   return (
     <canvas
       ref={canvasRef}
-      width={CANVAS_W}
-      height={CANVAS_H}
+      width={canvasW(match)}
+      height={canvasH(match)}
       className="w-full h-auto rounded-lg shadow-2xl bg-black"
     />
   );
 }
+
