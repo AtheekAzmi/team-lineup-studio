@@ -47,9 +47,21 @@ export interface Match {
   player_text_color: string;
   card_width: number;
   card_height: number;
+  canvas_width: number;
+  canvas_height: number;
+  column_gap: number;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
+
+export const RESOLUTION_PRESETS: { id: string; label: string; w: number; h: number }[] = [
+  { id: "6x4m", label: "LED 6m × 4m (1536×1024)", w: 1536, h: 1024 },
+  { id: "1080p", label: "Full HD 1920×1080", w: 1920, h: 1080 },
+  { id: "720p", label: "HD 1280×720", w: 1280, h: 720 },
+  { id: "square", label: "Square 1080×1080", w: 1080, h: 1080 },
+  { id: "vertical", label: "Vertical 1080×1920", w: 1080, h: 1920 },
+  { id: "4k", label: "4K UHD 3840×2160", w: 3840, h: 2160 },
+];
 
 export const FONT_OPTIONS: { id: string; label: string }[] = [
   { id: "system-ui, sans-serif", label: "System Sans" },
