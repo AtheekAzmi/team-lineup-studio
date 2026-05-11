@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, Trash2, Edit3, LogOut } from "lucide-react";
+import { Plus, Trash2, Edit3, LogOut, LayoutGrid, List } from "lucide-react";
 import { defaultMatch } from "@/lib/lineup-types";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
