@@ -30,8 +30,8 @@ export async function exportLineupVideo(
 ): Promise<{ blob: Blob; ext: string }> {
   await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url, match.vs_badge_url, BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE]);
   const canvas = document.createElement("canvas");
-  canvas.width = CANVAS_W;
-  canvas.height = CANVAS_H;
+  canvas.width = canvasW(match);
+  canvas.height = canvasH(match);
   const ctx = canvas.getContext("2d")!;
   const fps = 30;
   const stream: MediaStream = (canvas as HTMLCanvasElement & { captureStream: (fps: number) => MediaStream }).captureStream(fps);
