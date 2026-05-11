@@ -95,6 +95,7 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
 }
 
 function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
+  const W = canvasW(m);
   const headerProg = easeOut(clamp01(t / 0.6));
   ctx.save();
   ctx.globalAlpha = headerProg;
@@ -104,16 +105,15 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.fillStyle = m.title_color || "#fff";
   ctx.textAlign = "center";
   ctx.font = `800 ${titleSize}px ${font}`;
-  ctx.fillText(m.title, CANVAS_W / 2, 40 + titleSize * 0.7);
+  ctx.fillText(m.title, W / 2, 40 + titleSize * 0.7);
   ctx.fillStyle = m.subtitle_color || "rgba(255,255,255,0.85)";
   ctx.font = `600 ${Math.round(titleSize * 0.6)}px ${font}`;
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
+  ctx.fillText(m.subtitle, W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
   ctx.restore();
 
-  // Brand logos flanking title (left = sports festival, right = OBA)
   const brandProg = easeOut(clamp01(t / 0.7));
   drawBrandLogo(ctx, BRAND_LEFT_LOGO, 110, 90, 150, brandProg);
-  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, CANVAS_W - 110, 90, 150, brandProg);
+  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, W - 110, 90, 150, brandProg);
 }
 
 function drawBrandLogo(
