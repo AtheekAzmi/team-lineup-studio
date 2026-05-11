@@ -330,10 +330,14 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawBackground(ctx, m);
   drawHeader(ctx, m, t);
 
-  const colW = Math.max(200, Math.min(CANVAS_W / 2 - 60, m.card_width || 480));
-  const sideMargin = Math.max(40, (CANVAS_W - colW * 2 - 120) / 2);
+  const W = canvasW(m), H = canvasH(m);
+  const sideMin = 40;
+  const gap = Math.max(80, Math.min(W - 2 * sideMin - 200, m.column_gap || 280));
+  const maxColW = (W - 2 * sideMin - gap) / 2;
+  const colW = Math.max(160, Math.min(maxColW, m.card_width || 480));
+  const sideMargin = (W - colW * 2 - gap) / 2;
   const colAX = sideMargin;
-  const colBX = CANVAS_W - sideMargin - colW;
+  const colBX = W - sideMargin - colW;
   const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
@@ -345,14 +349,14 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 70, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
   drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 70, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
-  drawVS(ctx, t, m.vs_badge_url);
+  // VS badge centered between the two columns
+  drawVS(ctx, m, t, W / 2, H / 2 + 30, gap);
 
   const rowsStartY = headerY + 80;
   const bottomGap = 15;
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length, 1);
   const rowGap = 6;
-  // Auto-size row height so rows fill available space with a small bottom gap, or use manual override
-  const available = CANVAS_H - rowsStartY - bottomGap;
+  const available = H - rowsStartY - bottomGap;
   const autoH = Math.floor((available - rowGap * (rows - 1)) / rows);
   const rowH = m.card_height && m.card_height > 0
     ? Math.max(20, Math.min(120, m.card_height))
