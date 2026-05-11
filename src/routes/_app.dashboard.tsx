@@ -25,6 +25,13 @@ function Dashboard() {
   const navigate = useNavigate();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"grid" | "list">(() => {
+    if (typeof window === "undefined") return "grid";
+    return (localStorage.getItem("matches_view") as "grid" | "list") || "grid";
+  });
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("matches_view", view);
+  }, [view]);
 
   const load = async () => {
     setLoading(true);
