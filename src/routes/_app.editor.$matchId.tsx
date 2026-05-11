@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
-import { ANIMATION_STYLES, FONT_OPTIONS, type Match } from "@/lib/lineup-types";
+import { ANIMATION_STYLES, FONT_OPTIONS, RESOLUTION_PRESETS, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
 import { downloadBlob, exportLineupVideo } from "@/lib/lineup-export";
 import { toast } from "sonner";
@@ -81,6 +81,7 @@ function Editor() {
       title_color: match.title_color, title_font: match.title_font, title_size: match.title_size,
       subtitle_color: match.subtitle_color, player_text_color: match.player_text_color,
       card_width: match.card_width, card_height: match.card_height,
+      canvas_width: match.canvas_width, canvas_height: match.canvas_height, column_gap: match.column_gap,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
@@ -272,7 +273,45 @@ function Editor() {
                     onValueChange={([v]) => update({ card_height: v })} />
                   <p className="text-[10px] text-muted-foreground">0 = auto-fit to available space</p>
                 </div>
+                <div className="space-y-1 pt-2">
+                  <Label className="text-xs">Center gap (VS area): {Math.round(match.column_gap)}px</Label>
+                  <Slider value={[match.column_gap]} min={120} max={600} step={5}
+                    onValueChange={([v]) => update({ column_gap: v })} />
+                  <p className="text-[10px] text-muted-foreground">Spacing between the two team columns where the VS badge sits.</p>
+                </div>
               </div>
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-border">
+                <p className="text-sm font-medium pt-3">Video resolution</p>
+                <Select
+                  value={
+                    RESOLUTION_PRESETS.find(p => p.w === match.canvas_width && p.h === match.canvas_height)?.id ?? "custom"
+                  }
+                  onValueChange={(v) => {
+                    const preset = RESOLUTION_PRESETS.find(p => p.id === v);
+                    if (preset) update({ canvas_width: preset.w, canvas_height: preset.h });
+                  }}
+                >
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {RESOLUTION_PRESETS.map(p => <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>)}
+                    <SelectItem value="custom">Custom…</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Width (px)</Label>
+                    <Input type="number" min={320} max={4096} step={2} value={match.canvas_width}
+                      onChange={(e) => update({ canvas_width: Math.max(320, Math.min(4096, parseInt(e.target.value) || 0)) })} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Height (px)</Label>
+                    <Input type="number" min={320} max={4096} step={2} value={match.canvas_height}
+                      onChange={(e) => update({ canvas_height: Math.max(320, Math.min(4096, parseInt(e.target.value) || 0)) })} />
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground">Aspect ratio: {(match.canvas_width / Math.max(1, match.canvas_height)).toFixed(2)}:1. Exports render at this exact size.</p>
               </div>
 
               <p className="text-sm font-medium pt-2">Background</p>

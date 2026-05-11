@@ -7,6 +7,9 @@ export const HOLD_DURATION = 9;
 export const MIN_DURATION = 15;
 export const MAX_DURATION = 20;
 
+export const canvasW = (m: Match) => Math.max(320, Math.round(m.canvas_width || CANVAS_W));
+export const canvasH = (m: Match) => Math.max(320, Math.round(m.canvas_height || CANVAS_H));
+
 // Brand assets shown on every lineup
 export const BRAND_LEFT_LOGO = "/branding/sports-festival-logo.png";
 export const BRAND_RIGHT_LOGO = "/branding/oba-logo.png";
@@ -59,27 +62,23 @@ export function preloadImages(urls: (string | null | undefined)[]): Promise<void
 }
 
 function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
-  const grad = ctx.createLinearGradient(0, 0, CANVAS_W, CANVAS_H);
+  const W = canvasW(m), H = canvasH(m);
+  const grad = ctx.createLinearGradient(0, 0, W, H);
   grad.addColorStop(0, m.bg_from);
   grad.addColorStop(1, m.bg_to);
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+  ctx.fillRect(0, 0, W, H);
 
   if (m.bg_image_url) {
     const img = getCachedImage(m.bg_image_url);
     if (img) {
-      // cover-fit
       const ir = img.width / img.height;
-      const cr = CANVAS_W / CANVAS_H;
-      let dw = CANVAS_W, dh = CANVAS_H, dx = 0, dy = 0;
+      const cr = W / H;
+      let dw = W, dh = H, dx = 0, dy = 0;
       if (ir > cr) {
-        dh = CANVAS_H;
-        dw = dh * ir;
-        dx = (CANVAS_W - dw) / 2;
+        dh = H; dw = dh * ir; dx = (W - dw) / 2;
       } else {
-        dw = CANVAS_W;
-        dh = dw / ir;
-        dy = (CANVAS_H - dh) / 2;
+        dw = W; dh = dw / ir; dy = (H - dh) / 2;
       }
       ctx.save();
       ctx.globalAlpha = clamp01(m.bg_image_opacity);
@@ -88,14 +87,15 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
     }
   }
 
-  const v = ctx.createRadialGradient(CANVAS_W / 2, CANVAS_H / 2, 200, CANVAS_W / 2, CANVAS_H / 2, 800);
+  const v = ctx.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, Math.max(W, H) * 0.6);
   v.addColorStop(0, "rgba(0,0,0,0)");
   v.addColorStop(1, "rgba(0,0,0,0.45)");
   ctx.fillStyle = v;
-  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+  ctx.fillRect(0, 0, W, H);
 }
 
 function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
+  const W = canvasW(m);
   const headerProg = easeOut(clamp01(t / 0.6));
   ctx.save();
   ctx.globalAlpha = headerProg;
@@ -105,16 +105,15 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.fillStyle = m.title_color || "#fff";
   ctx.textAlign = "center";
   ctx.font = `800 ${titleSize}px ${font}`;
-  ctx.fillText(m.title, CANVAS_W / 2, 40 + titleSize * 0.7);
+  ctx.fillText(m.title, W / 2, 40 + titleSize * 0.7);
   ctx.fillStyle = m.subtitle_color || "rgba(255,255,255,0.85)";
   ctx.font = `600 ${Math.round(titleSize * 0.6)}px ${font}`;
-  ctx.fillText(m.subtitle, CANVAS_W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
+  ctx.fillText(m.subtitle, W / 2, 40 + titleSize * 0.7 + titleSize * 0.85);
   ctx.restore();
 
-  // Brand logos flanking title (left = sports festival, right = OBA)
   const brandProg = easeOut(clamp01(t / 0.7));
   drawBrandLogo(ctx, BRAND_LEFT_LOGO, 110, 90, 150, brandProg);
-  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, CANVAS_W - 110, 90, 150, brandProg);
+  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, W - 110, 90, 150, brandProg);
 }
 
 function drawBrandLogo(
@@ -136,31 +135,31 @@ function drawBrandLogo(
   ctx.restore();
 }
 
-function drawVS(ctx: CanvasRenderingContext2D, t: number, badgeUrl?: string | null) {
+function drawVS(ctx: CanvasRenderingContext2D, m: Match, t: number, cx: number, cy: number, gap: number) {
   const p = easeOut(clamp01((t - 0.4) / 0.6));
   if (p <= 0) return;
-  const cx = CANVAS_W / 2, cy = CANVAS_H / 2 + 30;
   const scale = 0.7 + 0.3 * p;
-  const img = getCachedImage(badgeUrl || VS_BADGE_IMAGE);
+  const img = getCachedImage(m.vs_badge_url || VS_BADGE_IMAGE);
+  // Target size: fits inside gap with 24px margin on each side, capped by canvas height.
+  const target = Math.max(120, Math.min(canvasH(m) * 0.45, gap - 48));
   ctx.save();
   ctx.globalAlpha = p;
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
   if (img) {
-    const target = 280;
     const ratio = img.width / img.height || 1;
     const w = ratio >= 1 ? target : target * ratio;
     const h = ratio >= 1 ? target / ratio : target;
     ctx.drawImage(img, -w / 2, -h / 2, w, h);
   } else {
-    // Fallback vector VS while image loads
+    const s = target / 280;
     ctx.fillStyle = "#fde047";
     ctx.beginPath();
-    ctx.moveTo(-30, -70); ctx.lineTo(10, -10); ctx.lineTo(-15, -5);
-    ctx.lineTo(30, 70); ctx.lineTo(-10, 10); ctx.lineTo(15, 5);
+    ctx.moveTo(-30 * s, -70 * s); ctx.lineTo(10 * s, -10 * s); ctx.lineTo(-15 * s, -5 * s);
+    ctx.lineTo(30 * s, 70 * s); ctx.lineTo(-10 * s, 10 * s); ctx.lineTo(15 * s, 5 * s);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = "#fff";
-    ctx.font = "900 80px system-ui, sans-serif";
+    ctx.font = `900 ${Math.round(80 * s)}px system-ui, sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("VS", 0, 0);
   }
@@ -331,10 +330,14 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawBackground(ctx, m);
   drawHeader(ctx, m, t);
 
-  const colW = Math.max(200, Math.min(CANVAS_W / 2 - 60, m.card_width || 480));
-  const sideMargin = Math.max(40, (CANVAS_W - colW * 2 - 120) / 2);
+  const W = canvasW(m), H = canvasH(m);
+  const sideMin = 40;
+  const gap = Math.max(80, Math.min(W - 2 * sideMin - 200, m.column_gap || 280));
+  const maxColW = (W - 2 * sideMin - gap) / 2;
+  const colW = Math.max(160, Math.min(maxColW, m.card_width || 480));
+  const sideMargin = (W - colW * 2 - gap) / 2;
   const colAX = sideMargin;
-  const colBX = CANVAS_W - sideMargin - colW;
+  const colBX = W - sideMargin - colW;
   const headerY = 180;
 
   const teamProg = easeOut(clamp01((t - 0.2) / 0.5));
@@ -346,14 +349,14 @@ export function renderFrame(ctx: CanvasRenderingContext2D, m: Match, time: numbe
   drawLogo(ctx, m.team_a_logo_url, colAX + colW / 2, headerY - 70, m.team_a_logo_scale, m.team_a_logo_x, m.team_a_logo_y, logoProg);
   drawLogo(ctx, m.team_b_logo_url, colBX + colW / 2, headerY - 70, m.team_b_logo_scale, m.team_b_logo_x, m.team_b_logo_y, logoProg);
 
-  drawVS(ctx, t, m.vs_badge_url);
+  // VS badge centered between the two columns
+  drawVS(ctx, m, t, W / 2, H / 2 + 30, gap);
 
   const rowsStartY = headerY + 80;
   const bottomGap = 15;
   const rows = Math.max(m.team_a_players.length, m.team_b_players.length, 1);
   const rowGap = 6;
-  // Auto-size row height so rows fill available space with a small bottom gap, or use manual override
-  const available = CANVAS_H - rowsStartY - bottomGap;
+  const available = H - rowsStartY - bottomGap;
   const autoH = Math.floor((available - rowGap * (rows - 1)) / rows);
   const rowH = m.card_height && m.card_height > 0
     ? Math.max(20, Math.min(120, m.card_height))
