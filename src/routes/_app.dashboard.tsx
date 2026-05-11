@@ -137,7 +137,7 @@ function Dashboard() {
   };
 
   const applyBulkEdit = async () => {
-    const patch: Record<string, string> = {};
+    const patch: { title?: string; subtitle?: string } = {};
     if (editFields.title.trim()) patch.title = editFields.title.trim();
     if (editFields.subtitle.trim()) patch.subtitle = editFields.subtitle.trim();
     if (Object.keys(patch).length === 0) { toast.error("Enter at least one field to update"); return; }
