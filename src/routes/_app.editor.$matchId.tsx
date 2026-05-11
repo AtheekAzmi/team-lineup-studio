@@ -81,6 +81,7 @@ function Editor() {
       title_color: match.title_color, title_font: match.title_font, title_size: match.title_size,
       subtitle_color: match.subtitle_color, player_text_color: match.player_text_color,
       card_width: match.card_width, card_height: match.card_height,
+      canvas_width: match.canvas_width, canvas_height: match.canvas_height, column_gap: match.column_gap,
       animation_style: match.animation_style, animation_speed: match.animation_speed,
     }).eq("id", match.id);
     setSaving(false);
