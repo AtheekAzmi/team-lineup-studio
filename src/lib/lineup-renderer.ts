@@ -7,6 +7,9 @@ export const HOLD_DURATION = 9;
 export const MIN_DURATION = 15;
 export const MAX_DURATION = 20;
 
+export const canvasW = (m: Match) => Math.max(320, Math.round(m.canvas_width || CANVAS_W));
+export const canvasH = (m: Match) => Math.max(320, Math.round(m.canvas_height || CANVAS_H));
+
 // Brand assets shown on every lineup
 export const BRAND_LEFT_LOGO = "/branding/sports-festival-logo.png";
 export const BRAND_RIGHT_LOGO = "/branding/oba-logo.png";
