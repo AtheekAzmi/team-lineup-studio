@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Download, Image as ImageIcon, Loader2, Plus, Save, Trash2, Play, Upload, X } from "lucide-react";
-import { ANIMATION_STYLES, FONT_OPTIONS, type Match } from "@/lib/lineup-types";
+import { ANIMATION_STYLES, FONT_OPTIONS, RESOLUTION_PRESETS, type Match } from "@/lib/lineup-types";
 import { LineupCanvas } from "@/components/LineupCanvas";
 import { downloadBlob, exportLineupVideo } from "@/lib/lineup-export";
 import { toast } from "sonner";
