@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE, canvasH, canvasW, preloadImages, renderFrame, totalDuration } from "@/lib/lineup-renderer";
+import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE, canvasH, canvasW, preloadImages, preloadVideo, renderFrame, totalDuration } from "@/lib/lineup-renderer";
 import type { Match } from "@/lib/lineup-types";
 
 interface Props {
