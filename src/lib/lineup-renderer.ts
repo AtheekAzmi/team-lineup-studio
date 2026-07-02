@@ -61,6 +61,45 @@ export function preloadImages(urls: (string | null | undefined)[]): Promise<void
   return Promise.all(tasks).then(() => undefined);
 }
 
+// ---- Video cache for animated backgrounds ----
+const videoCache = new Map<string, HTMLVideoElement>();
+
+export function getCachedVideo(url: string): HTMLVideoElement | null {
+  if (!url) return null;
+  const cached = videoCache.get(url);
+  if (cached) return cached.readyState >= 2 ? cached : null;
+  const v = document.createElement("video");
+  v.src = url;
+  v.crossOrigin = "anonymous";
+  v.muted = true;
+  v.loop = true;
+  v.autoplay = true;
+  v.playsInline = true;
+  v.play().catch(() => {});
+  videoCache.set(url, v);
+  return null;
+}
+
+export function preloadVideo(url: string | null | undefined): Promise<void> {
+  if (!url) return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    const existing = videoCache.get(url);
+    const v = existing ?? document.createElement("video");
+    if (!existing) {
+      v.src = url;
+      v.crossOrigin = "anonymous";
+      v.muted = true;
+      v.loop = true;
+      v.playsInline = true;
+      videoCache.set(url, v);
+    }
+    if (v.readyState >= 2) return resolve();
+    const done = () => { v.play().catch(() => {}); resolve(); };
+    v.oncanplay = done;
+    v.onerror = () => resolve();
+  });
+}
+
 function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
   const W = canvasW(m), H = canvasH(m);
   const grad = ctx.createLinearGradient(0, 0, W, H);
@@ -69,22 +108,26 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  if (m.bg_image_url) {
-    const img = getCachedImage(m.bg_image_url);
-    if (img) {
-      const ir = img.width / img.height;
-      const cr = W / H;
-      let dw = W, dh = H, dx = 0, dy = 0;
-      if (ir > cr) {
-        dh = H; dw = dh * ir; dx = (W - dw) / 2;
-      } else {
-        dw = W; dh = dw / ir; dy = (H - dh) / 2;
-      }
-      ctx.save();
-      ctx.globalAlpha = clamp01(m.bg_image_opacity);
-      ctx.drawImage(img, dx, dy, dw, dh);
-      ctx.restore();
+  const drawCover = (src: CanvasImageSource, sw: number, sh: number, alpha: number) => {
+    const ir = sw / sh;
+    const cr = W / H;
+    let dw = W, dh = H, dx = 0, dy = 0;
+    if (ir > cr) { dh = H; dw = dh * ir; dx = (W - dw) / 2; }
+    else { dw = W; dh = dw / ir; dy = (H - dh) / 2; }
+    ctx.save();
+    ctx.globalAlpha = clamp01(alpha);
+    ctx.drawImage(src, dx, dy, dw, dh);
+    ctx.restore();
+  };
+
+  if (m.bg_video_url) {
+    const vid = getCachedVideo(m.bg_video_url);
+    if (vid && vid.videoWidth > 0) {
+      drawCover(vid, vid.videoWidth, vid.videoHeight, clamp01(m.bg_image_opacity));
     }
+  } else if (m.bg_image_url) {
+    const img = getCachedImage(m.bg_image_url);
+    if (img) drawCover(img, img.width, img.height, clamp01(m.bg_image_opacity));
   }
 
   const v = ctx.createRadialGradient(W / 2, H / 2, 200, W / 2, H / 2, Math.max(W, H) * 0.6);
