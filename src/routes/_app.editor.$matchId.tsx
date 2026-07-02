@@ -371,6 +371,64 @@ function Editor() {
                 )}
               </div>
 
+              {/* Background video */}
+              <div className="space-y-2 pt-4 border-t border-border">
+                <Label className="text-sm font-medium flex items-center gap-2"><ImageIcon className="w-4 h-4" />Background video (loops, muted)</Label>
+                {match.bg_video_url ? (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <video src={match.bg_video_url} className="w-full h-24 object-cover rounded border border-border bg-black" muted loop autoPlay playsInline />
+                      <Button size="icon" variant="destructive" className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => { update({ bg_video_url: null }); setPlayKey(k => k + 1); }}>
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">Video plays behind everything. Uses the same opacity slider as background image. Video takes priority over the image if both are set.</p>
+                  </div>
+                ) : (
+                  <label className="flex items-center justify-center gap-2 h-20 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
+                    {uploading === "bg_video_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Upload className="w-4 h-4" /><span className="text-sm">Upload background video (mp4/webm)</span></>}
+                    <input type="file" accept="video/mp4,video/webm,video/*" className="hidden"
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAsset(f, "bg_video_url"); }} />
+                  </label>
+                )}
+              </div>
+
+              {/* Top brand logos (festival + OBA) */}
+              <div className="space-y-3 pt-4 border-t border-border">
+                <p className="text-sm font-medium">Top corner logos</p>
+                {(["left", "right"] as const).map((side) => {
+                  const label = side === "left" ? "Left (festival)" : "Right (OBA)";
+                  const sField = side === "left" ? "brand_left_scale" : "brand_right_scale";
+                  const xField = side === "left" ? "brand_left_x" : "brand_right_x";
+                  const yField = side === "left" ? "brand_left_y" : "brand_right_y";
+                  const s = match[sField]; const x = match[xField]; const y = match[yField];
+                  return (
+                    <div key={side} className="space-y-2 p-3 rounded border border-border bg-muted/20">
+                      <Label className="text-xs font-semibold">{label}</Label>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Size: {s.toFixed(2)}x</Label>
+                        <Slider value={[s]} min={0.3} max={3} step={0.05}
+                          onValueChange={([v]) => update({ [sField]: v } as Partial<Match>)} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Offset X: {x}px</Label>
+                          <Slider value={[x]} min={-300} max={300} step={1}
+                            onValueChange={([v]) => update({ [xField]: v } as Partial<Match>)} />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Offset Y: {y}px</Label>
+                          <Slider value={[y]} min={-200} max={200} step={1}
+                            onValueChange={([v]) => update({ [yField]: v } as Partial<Match>)} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+
               {/* Logos */}
               {(["a", "b"] as const).map((side) => {
                 const field = side === "a" ? "team_a_logo_url" : "team_b_logo_url";
