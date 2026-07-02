@@ -31,6 +31,7 @@ export interface Match {
   bg_to: string;
   bg_image_url: string | null;
   bg_image_opacity: number;
+  bg_video_url: string | null;
   team_a_logo_url: string | null;
   team_a_logo_scale: number;
   team_a_logo_x: number;
@@ -50,6 +51,12 @@ export interface Match {
   canvas_width: number;
   canvas_height: number;
   column_gap: number;
+  brand_left_scale: number;
+  brand_left_x: number;
+  brand_left_y: number;
+  brand_right_scale: number;
+  brand_right_x: number;
+  brand_right_y: number;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
