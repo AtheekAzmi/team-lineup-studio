@@ -31,7 +31,7 @@ function Editor() {
 
   const uploadAsset = async (
     file: File,
-    field: "bg_image_url" | "team_a_logo_url" | "team_b_logo_url" | "vs_badge_url",
+    field: "bg_image_url" | "bg_video_url" | "team_a_logo_url" | "team_b_logo_url" | "vs_badge_url",
   ) => {
     const { data: userData } = await supabase.auth.getUser();
     const uid = userData.user?.id;
