@@ -31,6 +31,7 @@ export interface Match {
   bg_to: string;
   bg_image_url: string | null;
   bg_image_opacity: number;
+  bg_video_url: string | null;
   team_a_logo_url: string | null;
   team_a_logo_scale: number;
   team_a_logo_x: number;
@@ -50,6 +51,12 @@ export interface Match {
   canvas_width: number;
   canvas_height: number;
   column_gap: number;
+  brand_left_scale: number;
+  brand_left_x: number;
+  brand_left_y: number;
+  brand_right_scale: number;
+  brand_right_x: number;
+  brand_right_y: number;
   animation_style: AnimationStyle;
   animation_speed: number;
 }
@@ -91,6 +98,13 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   bg_to: "#7f1d1d",
   bg_image_url: null,
   bg_image_opacity: 0.6,
+  bg_video_url: null,
+  brand_left_scale: 1,
+  brand_left_x: 0,
+  brand_left_y: 0,
+  brand_right_scale: 1,
+  brand_right_x: 0,
+  brand_right_y: 0,
   team_a_logo_url: null,
   team_a_logo_scale: 1,
   team_a_logo_x: 0,

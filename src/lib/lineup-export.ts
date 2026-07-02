@@ -1,4 +1,4 @@
-import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE, canvasH, canvasW, preloadImages, renderFrame, totalDuration } from "./lineup-renderer";
+import { BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE, canvasH, canvasW, preloadImages, preloadVideo, renderFrame, totalDuration } from "./lineup-renderer";
 import type { Match } from "./lineup-types";
 
 export type ExportFormat = "mp4" | "webm";
@@ -29,6 +29,7 @@ export async function exportLineupVideo(
   onProgress?: (p: number) => void
 ): Promise<{ blob: Blob; ext: string }> {
   await preloadImages([match.bg_image_url, match.team_a_logo_url, match.team_b_logo_url, match.vs_badge_url, BRAND_LEFT_LOGO, BRAND_RIGHT_LOGO, VS_BADGE_IMAGE]);
+  await preloadVideo(match.bg_video_url);
   const canvas = document.createElement("canvas");
   canvas.width = canvasW(match);
   canvas.height = canvasH(match);
