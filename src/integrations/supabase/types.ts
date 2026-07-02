@@ -22,6 +22,13 @@ export type Database = {
           bg_image_opacity: number
           bg_image_url: string | null
           bg_to: string
+          bg_video_url: string | null
+          brand_left_scale: number
+          brand_left_x: number
+          brand_left_y: number
+          brand_right_scale: number
+          brand_right_x: number
+          brand_right_y: number
           canvas_height: number
           canvas_width: number
           card_height: number
@@ -62,6 +69,13 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          bg_video_url?: string | null
+          brand_left_scale?: number
+          brand_left_x?: number
+          brand_left_y?: number
+          brand_right_scale?: number
+          brand_right_x?: number
+          brand_right_y?: number
           canvas_height?: number
           canvas_width?: number
           card_height?: number
@@ -102,6 +116,13 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          bg_video_url?: string | null
+          brand_left_scale?: number
+          brand_left_x?: number
+          brand_left_y?: number
+          brand_right_scale?: number
+          brand_right_x?: number
+          brand_right_y?: number
           canvas_height?: number
           canvas_width?: number
           card_height?: number
