@@ -155,8 +155,9 @@ function drawHeader(ctx: CanvasRenderingContext2D, m: Match, t: number) {
   ctx.restore();
 
   const brandProg = easeOut(clamp01(t / 0.7));
-  drawBrandLogo(ctx, BRAND_LEFT_LOGO, 110, 90, 150, brandProg);
-  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, W - 110, 90, 150, brandProg);
+  const baseBrand = 210;
+  drawBrandLogo(ctx, BRAND_LEFT_LOGO, 130 + m.brand_left_x, 110 + m.brand_left_y, baseBrand * (m.brand_left_scale || 1), brandProg);
+  drawBrandLogo(ctx, BRAND_RIGHT_LOGO, W - 130 + m.brand_right_x, 110 + m.brand_right_y, baseBrand * (m.brand_right_scale || 1), brandProg);
 }
 
 function drawBrandLogo(
