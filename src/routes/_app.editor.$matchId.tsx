@@ -383,7 +383,12 @@ function Editor() {
                         <X className="w-3 h-3" />
                       </Button>
                     </div>
-                    <p className="text-[10px] text-muted-foreground">Video plays behind everything. Uses the same opacity slider as background image. Video takes priority over the image if both are set.</p>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Opacity: {Math.round(match.bg_image_opacity * 100)}%</Label>
+                      <Slider value={[match.bg_image_opacity]} min={0} max={1} step={0.05}
+                        onValueChange={([v]) => update({ bg_image_opacity: v })} />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">Video plays behind everything and shares the opacity above with the background image. Video takes priority over the image if both are set.</p>
                   </div>
                 ) : (
                   <label className="flex items-center justify-center gap-2 h-20 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">
