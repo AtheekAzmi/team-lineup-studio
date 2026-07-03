@@ -72,7 +72,8 @@ function Editor() {
       team_a_name: match.team_a_name, team_a_players: match.team_a_players, team_a_color: match.team_a_color,
       team_b_name: match.team_b_name, team_b_players: match.team_b_players, team_b_color: match.team_b_color,
       bg_from: match.bg_from, bg_to: match.bg_to,
-      bg_image_url: match.bg_image_url, bg_image_opacity: match.bg_image_opacity, bg_video_url: match.bg_video_url,
+      bg_image_url: match.bg_image_url, bg_image_opacity: match.bg_image_opacity,
+      bg_video_url: match.bg_video_url, bg_video_opacity: match.bg_video_opacity,
       brand_left_scale: match.brand_left_scale, brand_left_x: match.brand_left_x, brand_left_y: match.brand_left_y,
       brand_right_scale: match.brand_right_scale, brand_right_x: match.brand_right_x, brand_right_y: match.brand_right_y,
       team_a_logo_url: match.team_a_logo_url, team_a_logo_scale: match.team_a_logo_scale,
@@ -384,11 +385,11 @@ function Editor() {
                       </Button>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Opacity: {Math.round(match.bg_image_opacity * 100)}%</Label>
-                      <Slider value={[match.bg_image_opacity]} min={0} max={1} step={0.05}
-                        onValueChange={([v]) => update({ bg_image_opacity: v })} />
+                      <Label className="text-xs">Opacity: {Math.round(match.bg_video_opacity * 100)}%</Label>
+                      <Slider value={[match.bg_video_opacity]} min={0} max={1} step={0.05}
+                        onValueChange={([v]) => update({ bg_video_opacity: v })} />
                     </div>
-                    <p className="text-[10px] text-muted-foreground">Video plays behind everything and shares the opacity above with the background image. Video takes priority over the image if both are set.</p>
+                    <p className="text-[10px] text-muted-foreground">Video plays behind everything. Video takes priority over the image if both are set.</p>
                   </div>
                 ) : (
                   <label className="flex items-center justify-center gap-2 h-20 border border-dashed border-border rounded cursor-pointer hover:bg-muted/40 transition">

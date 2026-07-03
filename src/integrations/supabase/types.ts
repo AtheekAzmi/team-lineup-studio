@@ -22,6 +22,7 @@ export type Database = {
           bg_image_opacity: number
           bg_image_url: string | null
           bg_to: string
+          bg_video_opacity: number
           bg_video_url: string | null
           brand_left_scale: number
           brand_left_x: number
@@ -69,6 +70,7 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          bg_video_opacity?: number
           bg_video_url?: string | null
           brand_left_scale?: number
           brand_left_x?: number
@@ -116,6 +118,7 @@ export type Database = {
           bg_image_opacity?: number
           bg_image_url?: string | null
           bg_to?: string
+          bg_video_opacity?: number
           bg_video_url?: string | null
           brand_left_scale?: number
           brand_left_x?: number

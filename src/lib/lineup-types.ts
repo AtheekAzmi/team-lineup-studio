@@ -32,6 +32,7 @@ export interface Match {
   bg_image_url: string | null;
   bg_image_opacity: number;
   bg_video_url: string | null;
+  bg_video_opacity: number;
   team_a_logo_url: string | null;
   team_a_logo_scale: number;
   team_a_logo_x: number;
@@ -99,6 +100,7 @@ export const defaultMatch = (): Omit<Match, "id"> => ({
   bg_image_url: null,
   bg_image_opacity: 0.6,
   bg_video_url: null,
+  bg_video_opacity: 0.6,
   brand_left_scale: 1,
   brand_left_x: 0,
   brand_left_y: 0,

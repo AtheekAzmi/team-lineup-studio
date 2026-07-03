@@ -123,7 +123,7 @@ function drawBackground(ctx: CanvasRenderingContext2D, m: Match) {
   if (m.bg_video_url) {
     const vid = getCachedVideo(m.bg_video_url);
     if (vid && vid.videoWidth > 0) {
-      drawCover(vid, vid.videoWidth, vid.videoHeight, clamp01(m.bg_image_opacity));
+      drawCover(vid, vid.videoWidth, vid.videoHeight, clamp01(m.bg_video_opacity));
     }
   } else if (m.bg_image_url) {
     const img = getCachedImage(m.bg_image_url);
