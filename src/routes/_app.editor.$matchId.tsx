@@ -115,7 +115,7 @@ function Editor() {
     const set = (next: string[]) => update(side === "a" ? { team_a_players: next } : { team_b_players: next });
     return (
       <div className="space-y-3">
-        <BulkImport onImport={(names, mode) => set(mode === "replace" ? names : [...players, ...names])} />
+        <BulkImport players={players} onImport={(names, mode) => set(mode === "replace" ? names : [...players, ...names])} />
         <div className="space-y-2">
           {players.map((p, i) => (
             <div key={i} className="flex gap-2">
@@ -533,30 +533,33 @@ function Editor() {
   );
 }
 
-function BulkImport({ onImport }: { onImport: (names: string[], mode: "replace" | "append") => void }) {
+function BulkImport({ players, onImport }: { players: string[]; onImport: (names: string[], mode: "replace" | "append") => void }) {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
   const parse = () =>
     text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  const openEditor = () => { setText(players.join("\n")); setOpen(true); };
   if (!open) {
     return (
-      <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>
-        <Upload className="w-4 h-4 mr-1" />Bulk import
+      <Button size="sm" variant="secondary" onClick={openEditor}>
+        <Upload className="w-4 h-4 mr-1" />{players.length > 0 ? "Bulk edit" : "Bulk import"}
       </Button>
     );
   }
   return (
     <div className="space-y-2 p-3 border border-border rounded-md bg-muted/30">
-      <Label className="text-xs">Paste names — separated by comma or new line</Label>
-      <Textarea rows={5} value={text} onChange={(e) => setText(e.target.value)}
+      <Label className="text-xs">
+        {players.length > 0 ? "Edit the list below — separated by comma or new line" : "Paste names — separated by comma or new line"}
+      </Label>
+      <Textarea rows={8} value={text} onChange={(e) => setText(e.target.value)}
         placeholder={"PLAYER ONE\nPLAYER TWO\nPLAYER THREE\n\nor: Player One, Player Two, Player Three"} />
       <p className="text-xs text-muted-foreground">{parse().length} player(s) detected</p>
       <div className="flex gap-2 flex-wrap">
-        <Button size="sm" onClick={() => { const n = parse(); if (n.length) { onImport(n, "replace"); setOpen(false); setText(""); toast.success(`Replaced with ${n.length} players`); } }}>
-          Replace all
+        <Button size="sm" onClick={() => { const n = parse(); onImport(n, "replace"); setOpen(false); setText(""); toast.success(`Saved ${n.length} players`); }}>
+          Save changes
         </Button>
         <Button size="sm" variant="outline" onClick={() => { const n = parse(); if (n.length) { onImport(n, "append"); setOpen(false); setText(""); toast.success(`Added ${n.length} players`); } }}>
-          Append
+          Append instead
         </Button>
         <Button size="sm" variant="ghost" onClick={() => { setOpen(false); setText(""); }}>Cancel</Button>
       </div>

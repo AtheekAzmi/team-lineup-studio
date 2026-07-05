@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit3, LogOut, LayoutGrid, List, GripVertical, X } from "lucide-react";
+import { Plus, Trash2, Edit3, LogOut, LayoutGrid, List, GripVertical, X, Copy } from "lucide-react";
 import { defaultMatch } from "@/lib/lineup-types";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -89,6 +89,23 @@ function Dashboard() {
       .select("id").single();
     if (error) { toast.error(error.message); return; }
     navigate({ to: "/editor/$matchId", params: { matchId: data.id } });
+  };
+
+  const duplicate = async (id: string) => {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const { data: original, error: fetchErr } = await supabase.from("matches").select("*").eq("id", id).single();
+    if (fetchErr || !original) { toast.error(fetchErr?.message ?? "Match not found"); return; }
+    const { id: _id, created_at: _createdAt, updated_at: _updatedAt, ...rest } = original;
+    const nextOrder = (rows[0]?.sort_order ?? 0) - 1; // place copy on top
+    const { data, error } = await supabase
+      .from("matches")
+      .insert({ ...rest, title: `${rest.title} (Copy)`, user_id: u.user.id, sort_order: nextOrder })
+      .select("id,title,subtitle,team_a_name,team_b_name,updated_at,sort_order")
+      .single();
+    if (error) { toast.error(error.message); return; }
+    setRows(r => [data as Row, ...r]);
+    toast.success("Match duplicated");
   };
 
   const remove = async (id: string) => {
@@ -231,6 +248,7 @@ function Dashboard() {
                       selected={selected.has(r.id)}
                       onToggle={() => toggleSelect(r.id)}
                       onRemove={() => remove(r.id)}
+                      onDuplicate={() => duplicate(r.id)}
                     />
                   ))}
                 </div>
@@ -244,6 +262,7 @@ function Dashboard() {
                       selected={selected.has(r.id)}
                       onToggle={() => toggleSelect(r.id)}
                       onRemove={() => remove(r.id)}
+                      onDuplicate={() => duplicate(r.id)}
                     />
                   ))}
                 </div>
@@ -280,13 +299,14 @@ function Dashboard() {
 }
 
 function SortableMatchCard({
-  row: r, view, selected, onToggle, onRemove,
+  row: r, view, selected, onToggle, onRemove, onDuplicate,
 }: {
   row: Row;
   view: "grid" | "list";
   selected: boolean;
   onToggle: () => void;
   onRemove: () => void;
+  onDuplicate: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: r.id });
   const style: React.CSSProperties = {
@@ -315,6 +335,7 @@ function SortableMatchCard({
             <Button asChild size="sm">
               <Link to="/editor/$matchId" params={{ matchId: r.id }}><Edit3 className="w-4 h-4 mr-1" />Edit</Link>
             </Button>
+            <Button size="icon" variant="ghost" onClick={onDuplicate} aria-label="Duplicate"><Copy className="w-4 h-4" /></Button>
             <Button size="icon" variant="ghost" onClick={onRemove}><Trash2 className="w-4 h-4" /></Button>
           </div>
         </Card>
@@ -338,6 +359,7 @@ function SortableMatchCard({
           <Button asChild size="sm" className="flex-1">
             <Link to="/editor/$matchId" params={{ matchId: r.id }}><Edit3 className="w-4 h-4 mr-1" />Edit</Link>
           </Button>
+          <Button size="icon" variant="ghost" onClick={onDuplicate} aria-label="Duplicate"><Copy className="w-4 h-4" /></Button>
           <Button size="icon" variant="ghost" onClick={onRemove}><Trash2 className="w-4 h-4" /></Button>
         </div>
       </Card>
