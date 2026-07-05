@@ -183,9 +183,9 @@ function Editor() {
         </div>
 
         {/* Side panel */}
-        <Card className="p-5 bg-card h-fit">
+        <Card className="p-5 bg-card h-fit lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
           <Tabs defaultValue="content">
-            <TabsList className="grid grid-cols-3 w-full">
+            <TabsList className="grid grid-cols-3 w-full lg:sticky lg:top-0 lg:z-10">
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="style">Style</TabsTrigger>
               <TabsTrigger value="anim">Animation</TabsTrigger>
